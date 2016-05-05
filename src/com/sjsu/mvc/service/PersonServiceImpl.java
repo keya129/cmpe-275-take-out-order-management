@@ -33,7 +33,7 @@ public class PersonServiceImpl implements PersonService {
     }
  
     @Override
-    public void checkLogin(String email,String password){
-    	this.personDAO.checkLogin(email,password);
+    public boolean checkLogin(String email,String password){
+    	return this.personDAO.checkLogin(email,password);
     }
 }

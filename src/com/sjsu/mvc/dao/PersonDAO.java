@@ -9,5 +9,5 @@ public interface PersonDAO {
     public void createorUpdate(Profile p);
     public Profile getPersonById(String id);
     public void remove(String id);
-	void checkLogin(String email, String password);
+	public boolean checkLogin(String email, String password);
 }

@@ -37,7 +37,7 @@
 
 	<h2 class="title">Login</h2>
 
-	<form:form modelAttribute="homePageForm" id="loginform">
+	<form:form modelAttribute="homePageForm" id="loginform" action="/login">
 
 			<table id="home_page">
 								<tr>
@@ -55,7 +55,7 @@
 								<tr>
 					<td></td>
 					<td><input type="submit" value="Login"
-						onclick="javascript:update();"> </td>
+						> </td>
 				</tr>
 
 			</table>

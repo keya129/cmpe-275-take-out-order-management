@@ -3,10 +3,12 @@ package com.sjsu.mvc.dao;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
+import javax.persistence.*;
 import javax.jdo.Query;
 
 
 import com.sjsu.mvc.PMF;
+import com.sjsu.mvc.EMFService;
 import com.sjsu.mvc.model.Profile;
  
 
@@ -35,10 +37,27 @@ public class PersonDAOImpl implements PersonDAO {
 		}
 	    
 	}
-	@Override
-	public void checkLogin(String email,String password){
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-        
+	public boolean checkLogin(String email,String password){
+		EntityManager em = EMFService.get().createEntityManager();
+		
+		try{
+			if(em.find( Profile.class, email )!=null){
+				 Profile p = em.find( Profile.class, email );
+				 System.out.println(p.getFirstName());
+					 if(p.getPassword().equals(password)){
+						 System.out.println("Returned true");
+						 return true;
+					 }
+				 return false;
+			 }
+			 else{
+				 return false;
+			 }
+			 
+		}finally{
+			em.close();
+		}
+		        
 	}
 	@Override
 	public void remove(String id) {

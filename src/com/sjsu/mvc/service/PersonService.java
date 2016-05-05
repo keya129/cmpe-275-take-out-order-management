@@ -10,5 +10,5 @@ public interface PersonService {
     public void createorUpdate(Profile p);
     public Profile getPersonById(String id);
     public void remove(String id);
-    public void checkLogin(String email,String password);
+    public boolean checkLogin(String email,String password);
 }

@@ -19,22 +19,23 @@ import com.google.appengine.api.datastore.Key;
 @PersistenceCapable
 public class Profile {
  
-	@PrimaryKey
+	
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    private String id;
+    private Long id;
 	@Persistent 
     private String firstName;
 	@Persistent
     private String lastName;
+	@PrimaryKey
 	@Persistent
     private String email;
 	@Persistent
     private String password;
  
-    public String getId() {
+    public Long getId() {
     	return id;
     }
-    public void setId(String newId){
+    public void setId(Long newId){
        this.id = newId;	
     }
     

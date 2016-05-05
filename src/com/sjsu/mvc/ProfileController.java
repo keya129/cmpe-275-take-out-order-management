@@ -89,7 +89,7 @@ public class ProfileController {
 		return result;
 	}
 	@RequestMapping(value="/profile",params = {"firstName", "lastName", "email", "password"},method = RequestMethod.POST) 
-	public ModelAndView createOrUpdate(@PathVariable String userId,HttpServletRequest request) {
+	public String createOrUpdate(Model model,HttpServletRequest request) {
         Profile p = new Profile();
         p.setFirstName(request.getParameter("firstName"));
         p.setLastName(request.getParameter("lastName"));
@@ -97,14 +97,19 @@ public class ProfileController {
         p.setPassword(request.getParameter("password"));
          System.out.println(p);
 		personService.createorUpdate(p);
-		return new ModelAndView("redirect:/profile/"); 
+		return "login";
 	} 
-	@RequestMapping(value="/login",
-			params = {"email", "password"},
-			method = RequestMethod.POST)
+	@RequestMapping(value="/login",params = {"email", "password"},method = RequestMethod.POST)
 	public String checkLogin(Model model, HttpServletRequest request) { 
 		String emailstr = request.getParameter("email");
-		
-		return "login";
+		String password = request.getParameter("password");
+		System.out.println("Email is "+emailstr+" Pass is" +password);
+		if(personService.checkLogin(emailstr, password)){
+			System.out.println("validated");
+		return "login";}
+		else{
+			System.out.println("not validated");
+
+		return "createProfile";}
 	}
 }

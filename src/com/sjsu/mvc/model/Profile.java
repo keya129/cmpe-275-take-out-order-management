@@ -31,7 +31,9 @@ public class Profile {
     private String email;
 	@Persistent
     private String password;
- 
+	@Persistent
+    private String userType;
+
     public Long getId() {
     	return id;
     }
@@ -52,6 +54,14 @@ public class Profile {
     {
     	this.lastName = newlastname;
     }
+    public String getUSer() {
+    	return lastName;
+    }
+    public void setUSer(String user)
+    {
+    	this.userType = user;
+    }
+
     public String getEmail() {
     	return email;
     }

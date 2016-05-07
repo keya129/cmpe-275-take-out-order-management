@@ -19,7 +19,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.sjsu.mvc.model.Profile;
 import com.sjsu.mvc.service.PersonService;
-
+import com.sjsu.mvc.MailService;
 
 
  
@@ -45,8 +45,14 @@ public class ProfileController {
 	 * This method is for login
 	 */
 	@RequestMapping(value = "/login", method = {RequestMethod.GET,RequestMethod.DELETE})
-	public String login() {
+	public String login(HttpServletRequest request) {
 		return "login";
+
+	}
+	@RequestMapping(value = "/login/{eid}", method = {RequestMethod.GET})
+	public String login(Model model, HttpServletRequest request) {
+		model.addAttribute("Errormsg","User is not validated");
+		return "/login";
 
 	}
 
@@ -95,8 +101,8 @@ public class ProfileController {
         p.setLastName(request.getParameter("lastName"));
         p.setEmail(request.getParameter("email"));
         p.setPassword(request.getParameter("password"));
-         System.out.println(p);
-		personService.createorUpdate(p);
+        System.out.println(p);
+        personService.createorUpdate(p);
 		return "login";
 	} 
 	@RequestMapping(value="/login",params = {"email", "password"},method = RequestMethod.POST)
@@ -106,10 +112,15 @@ public class ProfileController {
 		System.out.println("Email is "+emailstr+" Pass is" +password);
 		if(personService.checkLogin(emailstr, password)){
 			System.out.println("validated");
-		return "login";}
+		        request.getSession().setAttribute("user", "customer");
+		        System.out.println(request.getSession().getAttribute("user"));
+			MailService ms=new MailService();
+			ms.sendSimpleMail();
+			return "login";}
 		else{
 			System.out.println("not validated");
+			model.addAttribute("Errormsg","User is not validated");
 
-		return "createProfile";}
+		return "login";}
 	}
 }

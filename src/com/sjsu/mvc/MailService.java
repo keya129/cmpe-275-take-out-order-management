@@ -1,42 +1,47 @@
 package com.sjsu.mvc;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+
 import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
-public final class MailService {
-	 
-	  @SuppressWarnings("unused")
-	public  void sendSimpleMail() {
-		    // [START simple_example]
-		    Properties props = new Properties();
-		    Session session = Session.getDefaultInstance(props, null);
+public class MailService {
+	public void sendSimpleMail() {
+		Properties props = new Properties();
+		props.put("mail.smtp.host", "smtp.gmail.com");
+		props.put("mail.smtp.socketFactory.port", "465");
+		props.put("mail.smtp.socketFactory.class",
+				"javax.net.ssl.SSLSocketFactory");
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.port", "465");
 
-		    try {
-		      Message msg = new MimeMessage(session);
-		      msg.setFrom(new InternetAddress("admin@example.com", "Example.com Admin"));
-		      msg.addRecipient(Message.RecipientType.TO,
-		                       new InternetAddress("keyabhatt90@gmail.com", "Mr. User"));
-		      msg.setSubject("Your account has been activated");
-		      msg.setContent("String", "code");
-		      Transport.send(msg);
-		      System.out.println("Mail has been sent");
-		    } catch (AddressException e) {
-		      // ...
-		    } catch (MessagingException e) {
-		      // ...
-		    } catch (UnsupportedEncodingException e) {
-		      // ...
-		    }
-		    // [END simple_example]
-		  }
+		Session session = Session.getDefaultInstance(props,
+			new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication("keyabhatt90@gmail.com","onlySalman1234");
+				}
+			});
 
+		try {
+
+			Message message = new MimeMessage(session);
+			message.setFrom(new InternetAddress("admin@cooktail.com"));
+			message.setRecipients(Message.RecipientType.TO,
+					InternetAddress.parse("keyabhatt90@gmail.com"));
+			message.setSubject("Testing Subject");
+			message.setText("Hello" +
+					"\n\n You are a genius!");
+
+			Transport.send(message);
+
+			System.out.println("Done");
+
+		} catch (MessagingException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

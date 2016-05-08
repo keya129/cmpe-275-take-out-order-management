@@ -102,7 +102,12 @@ public class ProfileController {
         p.setEmail(request.getParameter("email"));
         p.setPassword(request.getParameter("password"));
         System.out.println(p);
+        MailService ms=new MailService();
+		ms.sendSimpleMail();
+		
         personService.createorUpdate(p);
+		model.addAttribute("Errormsg","User is created");
+
 		return "login";
 	} 
 	@RequestMapping(value="/login",params = {"email", "password"},method = RequestMethod.POST)
@@ -114,8 +119,6 @@ public class ProfileController {
 			System.out.println("validated");
 		        request.getSession().setAttribute("user", "customer");
 		        System.out.println(request.getSession().getAttribute("user"));
-			MailService ms=new MailService();
-			ms.sendSimpleMail();
 			return "login";}
 		else{
 			System.out.println("not validated");

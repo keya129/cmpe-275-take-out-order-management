@@ -49,6 +49,12 @@ public class ProfileController {
 		return "login";
 
 	}
+	@RequestMapping(value = "/index", method = {RequestMethod.GET,RequestMethod.DELETE})
+	public String index(HttpServletRequest request) {
+		return "index";
+
+	}
+
 	@RequestMapping(value = "/login/{eid}", method = {RequestMethod.GET})
 	public String login(Model model, HttpServletRequest request) {
 		model.addAttribute("Errormsg","User is not validated");

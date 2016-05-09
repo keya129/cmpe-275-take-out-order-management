@@ -1,5 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ page import="com.google.appengine.api.datastore.KeyFactory"%>
+<%@ page session="true"%>
+    
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -37,13 +42,22 @@
 	<!--- Header Starts Here --->
 	<div class="header" id="home">
 		<div class="container">
+		<div class="blackstrip"><p><c:out value ='${Errormsg}'/></p></div>
 			<div class="logo">
 				 <a href="index.html"><img src="images/logo.png" alt=""></a>
 			</div>
 			<div class="menu">
+			<% String username = (String)request.getSession().getAttribute("user"); %>
+			
+			
+			
+			
 				<ul class="menu-top">
 					<li><a class="play-icon popup-with-zoom-anim" href="#small-dialog">Log In</a></li>
 					<li><a class="play-icon popup-with-zoom-anim" href="#small-dialog1">Sign up</a></li>
+<% if (username == "admin") { %>
+					<li><a class="play-icon popup-with-zoom-anim" href="#small-dialog1">Add Category</a></li>
+<% }%>
 					<li><div class="main">
 								<section>
 									<button id="showRight" class="navig"></button>
@@ -57,24 +71,27 @@
 					<!---//pop-up-box---->
 				<div id="small-dialog" class="mfp-hide">
 						<div class="login">
-	<form modelAttribute="Errormsg" id="loginform" action="/login">
+	<form:form  modelAttribute="Errormsg" id="loginform" action="/login">
 							<h3>Log In</h3>
 							<h4>Already a Member</h4>
-							<input type="text" value="Email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Email';}" />
-							<input type="password" value="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}"/>
+							<input type="text" value="Email" name="email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Email';}" />
+							<input type="password" value="Password" name="password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}"/>
 							<input type="submit" value="Login" />
-							</form>
+	</form:form>
 						</div>
 					</div>
 					<div id="small-dialog1" class="mfp-hide">
 						<div class="signup">
+							<form:form   id="profileform" action="/profile">
+						
 							<h3>Sign Up</h3>
 							<h4>Enter Your Details Here</h4>
-							<input type="text" value="First Name" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'First Name';}" />
-							<input type="text" value="Second Name" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Second Name';}" />
-							<input type="text" class="email"value="Enter Email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Enter Email';}"  />
-							<input type="password" value="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}"/>
+							<input type="text" value="First Name" name="firstName" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'First Name';}" />
+							<input type="text" value="Second Name" name="lastName" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Second Name';}" />
+							<input type="text" class="email" name="email" value="Enter Email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Enter Email';}"  />
+							<input type="password" value="Password" name="password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}"/>
 							<input type="submit"  value="SignUp"/>
+							</form:form>
 						</div>
 					</div>	
 				 <script>

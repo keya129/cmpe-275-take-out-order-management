@@ -38,7 +38,7 @@ public class ProfileController {
 	 */
 	@RequestMapping(value = "/profile", method = {RequestMethod.GET,RequestMethod.DELETE})
 	public String profile() {
-		return "createProfile";
+		return "index";
 
 	}
 	/**
@@ -46,7 +46,7 @@ public class ProfileController {
 	 */
 	@RequestMapping(value = "/login", method = {RequestMethod.GET,RequestMethod.DELETE})
 	public String login(HttpServletRequest request) {
-		return "login";
+		return "index";
 
 	}
 	@RequestMapping(value = "/index", method = {RequestMethod.GET,RequestMethod.DELETE})
@@ -58,7 +58,7 @@ public class ProfileController {
 	@RequestMapping(value = "/login/{eid}", method = {RequestMethod.GET})
 	public String login(Model model, HttpServletRequest request) {
 		model.addAttribute("Errormsg","User is not validated");
-		return "/login";
+		return "/index";
 
 	}
 
@@ -88,7 +88,7 @@ public class ProfileController {
 	
 	@RequestMapping(value = "/profile/{userId}", method = RequestMethod.DELETE)
 	 public @ResponseBody String profileDelete(@PathVariable String userId, HttpServletRequest request ){
-	    String result = "/profile";
+	    String result = "/index";
 		try{
 			Profile p = personService.getPersonById(userId);
 			personService.remove(userId);
@@ -113,22 +113,28 @@ public class ProfileController {
         personService.createorUpdate(p);
 		model.addAttribute("Errormsg","User is created");
 
-		return "login";
+		return "index";
 	} 
 	@RequestMapping(value="/login",params = {"email", "password"},method = RequestMethod.POST)
 	public String checkLogin(Model model, HttpServletRequest request) { 
 		String emailstr = request.getParameter("email");
 		String password = request.getParameter("password");
+		
 		System.out.println("Email is "+emailstr+" Pass is" +password);
-		if(personService.checkLogin(emailstr, password)){
+		if(emailstr.equals("admin") && password.equals("admin")){
+	        request.getSession().setAttribute("user", "admin");
+	        System.out.println(request.getSession().getAttribute("user"));
+	        return "index";
+		}
+		else if(personService.checkLogin(emailstr, password)){
 			System.out.println("validated");
 		        request.getSession().setAttribute("user", "customer");
 		        System.out.println(request.getSession().getAttribute("user"));
-			return "login";}
+			return "index";}
 		else{
 			System.out.println("not validated");
 			model.addAttribute("Errormsg","User is not validated");
 
-		return "login";}
+		return "index";}
 	}
 }

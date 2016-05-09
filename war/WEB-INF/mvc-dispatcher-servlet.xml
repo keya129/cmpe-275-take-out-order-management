@@ -23,11 +23,16 @@
 	</bean>
 	   
     <bean id="personDAO" class="com.sjsu.mvc.dao.PersonDAOImpl"/>
-        
+    <bean id="menuServiceDAO" class="com.sjsu.mvc.dao.MenuServiceDAOImpl"/>    
+     
   
     <bean id="personService" class="com.sjsu.mvc.service.PersonServiceImpl">
         <property name="personDAO" ref="personDAO"></property>
     </bean>
+    <bean id="menuService" class="com.sjsu.mvc.service.MenuServiceImpl">
+        <property name="menuServiceDAO" ref="menuServiceDAO"></property>
+    </bean>
+    
     <context:component-scan base-package="com.sjsu.mvc" />
 
 </beans>

@@ -104,7 +104,6 @@ public class ProfileController {
         System.out.println(p);
         MailService ms=new MailService();
 		ms.sendSimpleMail();
-		
         personService.createorUpdate(p);
 		model.addAttribute("Errormsg","User is created");
 

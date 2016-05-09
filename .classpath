@@ -29,5 +29,15 @@
 	<classpathentry kind="lib" path="/Users/keya/Documents/cmpe275-project/cmpe275-lab2/war/WEB-INF/lib/spring-expression-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="/Users/keya/Documents/cmpe275-project/cmpe275-lab2/war/WEB-INF/lib/spring-web-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="/Users/keya/Documents/cmpe275-project/cmpe275-lab2/war/WEB-INF/lib/spring-webmvc-3.1.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="/Users/keya/.m2/repository/org/springframework/spring-tx/4.0.3.RELEASE/spring-tx-4.0.3.RELEASE.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="org.eclipse.jst.component.archivename" value="spring-tx-4.0.3.RELEASE.jar"/>
+			<attribute name="maven.groupId" value="org.springframework"/>
+			<attribute name="maven.artifactId" value="spring-tx"/>
+			<attribute name="maven.version" value="4.0.3.RELEASE"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

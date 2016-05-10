@@ -18,6 +18,7 @@ public class DisabledMenu {
 	private int calories;
 	private int prepTime;
 
+
 	public int getMenuId() {
 		return menuId;
 	}

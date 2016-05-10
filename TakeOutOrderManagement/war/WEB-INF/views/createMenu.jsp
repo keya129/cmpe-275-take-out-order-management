@@ -1,12 +1,17 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ page import="com.google.appengine.api.datastore.KeyFactory"%>
+<%@ page import="com.google.appengine.api.blobstore.BlobstoreServiceFactory"%>
+<%@ page import="com.google.appengine.api.blobstore.BlobstoreService"%>
+<%
+BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+%>
 <%@ page session="false"%>
 <html>
 <body>
 	<h1>Add Customer</h1>
 	
-	<form method="post" action="add" >
+	<form action="<%= blobstoreService.createUploadUrl("/menu/createMenu") %>" method="post" enctype="multipart/form-data">
 		<table>
 			<tr>
 				<td>
@@ -26,15 +31,7 @@
                                               maxlength="30" name="name" id="name" />
 				</td>
 			</tr>
-			<tr>
-				<td>
-					Url :
-				</td>
-				<td>
-					<input type="text" style="width: 185px;" 
-                                              maxlength="30" name="url" id="url" />
-				</td>
-			</tr>
+			
 			<tr>
 				<td>
 					Price :
@@ -62,8 +59,18 @@
                                             maxlength="30" name="prepTime" id="prepTime" />
 				</td>
 			</tr>
+			
+			<tr>
+				<td>
+					Image :
+				</td>
+				<td>
+                    <input type="text" name="filename"/>
+                    <input type="file" name="menuImage"/>
+                    <input type="submit" value="Submit"/>
+				</td>
+			</tr>
 		</table>
-		<input type="submit" class="save" title="Save" value="Save" />
 	</form>
 	
 </body>

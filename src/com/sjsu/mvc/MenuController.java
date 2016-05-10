@@ -55,19 +55,19 @@ public class MenuController {
 	public String createMenu(Model model, HttpServletRequest request) {
 		if ((request.getParameter("url").indexOf(",")) > -1) {
 			model.addAttribute("message", "Multiple URLs not allowed");
-			return "message";
+			return "index";
 		}
 		if (!floatOrNot(request.getParameter("price").substring(1))) {
 			model.addAttribute("message", "Price is invalid");
-			return "message";
+			return "index";
 		}
 		if (!numberOrNot(request.getParameter("calories"))) {
 			model.addAttribute("message", "Price is invalid");
-			return "message";
+			return "index";
 		}
 		if (!numberOrNot(request.getParameter("prepTime"))) {
 			model.addAttribute("message", "Preparation time is invalid");
-			return "message";
+			return "index";
 		}
 		String ctype = request.getParameter("categoryType");
 		switch (ctype) {
@@ -81,10 +81,10 @@ public class MenuController {
 			appetizer.setPrepTime(Integer.parseInt(request.getParameter("prepTime")));
 			if (menuService.createAppetizer(appetizer)) {
 				model.addAttribute("message", "Menu item added successfully");
-				return "message";
+				return "index";
 			} else {
 				model.addAttribute("message", "Transation Failure");
-				return "message";
+				return "index";
 			}
 		case "Maincourse":
 			Maincourse maincourse = new Maincourse();
@@ -96,10 +96,10 @@ public class MenuController {
 			maincourse.setPrepTime(Integer.parseInt(request.getParameter("prepTime")));
 			if (menuService.createMaincourse(maincourse)) {
 				model.addAttribute("message", "Menu item added successfully");
-				return "message";
+				return "index";
 			} else {
 				model.addAttribute("message", "Transation Failure");
-				return "message";
+				return "index";
 			}
 		case "Drink":
 			Drink drink = new Drink();
@@ -111,10 +111,10 @@ public class MenuController {
 			drink.setPrepTime(Integer.parseInt(request.getParameter("prepTime")));
 			if (menuService.createDrink(drink)) {
 				model.addAttribute("message", "Menu item added successfully");
-				return "message";
+				return "index";
 			} else {
 				model.addAttribute("message", "Transation Failure");
-				return "message";
+				return "index";
 			}
 		case "Desert":
 			Desert desert = new Desert();
@@ -126,14 +126,14 @@ public class MenuController {
 			desert.setPrepTime(Integer.parseInt(request.getParameter("prepTime")));
 			if (menuService.createDesert(desert)) {
 				model.addAttribute("message", "Menu item added successfully");
-				return "message";
+				return "index";
 			} else {
 				model.addAttribute("message", "Transation Failure");
-				return "message";
+				return "index";
 			}
 		default:
 			model.addAttribute("message", "Invalid Category Selected");
-			return "createMenu";
+			return "index";
 		}
 	}
 

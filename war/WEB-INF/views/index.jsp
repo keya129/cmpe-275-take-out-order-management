@@ -28,6 +28,18 @@
 							event.preventDefault();
 							$('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
 						});
+						$("#logout").click(function(e){
+						alert();
+							e.preventDefault();
+							//var url=window.location.href+"/logout";
+							//alert(url);
+							$.get("/logout",function(){
+							    location.reload();
+	
+							});
+
+
+						});
 					});
 					</script>
 <script type="text/javascript" src="../js/jquery.jscrollpane.min.js"></script>
@@ -36,13 +48,18 @@
 			{
 				$('.scroll-pane').jScrollPane();
 			});
+			
 		</script>
 </head>
 <body>
 	<!--- Header Starts Here --->
 	<div class="header" id="home">
 		<div class="container">
-		<div class="blackstrip"><p><c:out value ='${Errormsg}'/></p></div>
+		<div class="blackstrip"><c:if test='${Errormsg}'>
+<p><c:out value ='${Errormsg}'/></p></c:if>
+<c:if test='${categoryform}'>
+<p><c:out value ='${message}'/></p></c:if>
+</div>
 			<div class="logo">
 				 <a href="index.html"><img src="images/logo.png" alt=""></a>
 			</div>
@@ -53,11 +70,18 @@
 			
 			
 				<ul class="menu-top">
+				
+				<% if (username != null) { %>
+					<li><a class="play-icon popup-with-zoom-anim" href="" class="logout" id="logout">Log Out</a></li>
+				
+					<% }else{ %>
 					<li><a class="play-icon popup-with-zoom-anim" href="#small-dialog">Log In</a></li>
+					
+					<% } %>
 					<li><a class="play-icon popup-with-zoom-anim" href="#small-dialog1">Sign up</a></li>
 <% if (username == "admin") { %>
-					<li><a class="play-icon popup-with-zoom-anim" href="#small-dialog1">Add Category</a></li>
-<% }%>
+					<li><a class="play-icon popup-with-zoom-anim" href="#small-dialog2">Add Category</a></li>
+<% } %>
 					<li><div class="main">
 								<section>
 									<button id="showRight" class="navig"></button>
@@ -91,6 +115,22 @@
 							<input type="text" class="email" name="email" value="Enter Email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Enter Email';}"  />
 							<input type="password" value="Password" name="password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}"/>
 							<input type="submit"  value="SignUp"/>
+							</form:form>
+						</div>
+					</div>
+					<div id="small-dialog2" class="mfp-hide">
+						<div class="signup">
+							<form:form   modelAttribute="categoryform" id="categoryform" action="/menu/createMenu">
+						
+							<h3>Add new category</h3>
+							<h4>Enter Your Details Here</h4>
+							<input type="text" value="CategoryType" name="categoryType" id="categoryType" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'CategoryType';}" />
+							<input type="text" value="Item" name="name" id="name" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'name';}" />
+							<input type="text" id="url" name="url" value="URL" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'URL';}"  />
+							<input type="text" value="Price" name="price" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'price';}"/>
+							<input type="text" value="Calories" name="calories" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'calories';}"/>
+							<input type="text" value="PrepTime" name="prepTime" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'prepTime';}"/>
+							<input type="submit"  value="Add"/>
 							</form:form>
 						</div>
 					</div>	

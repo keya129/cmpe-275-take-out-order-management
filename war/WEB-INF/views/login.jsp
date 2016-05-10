@@ -38,7 +38,8 @@
 	<h2 class="title">Login</h2>
 
 	<form:form modelAttribute="Errormsg" id="loginform" action="/login">
-<p><c:out value ='${Errormsg}'/></p>
+<c:if test="${Errormsg}">
+<p><c:out value ='${Errormsg}'/></p></c:if>
 			<table id="home_page">
 								<tr>
 					<th>Email</th>

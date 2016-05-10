@@ -54,6 +54,13 @@ public class ProfileController {
 		return "index";
 
 	}
+	@RequestMapping(value = "/logout", method = {RequestMethod.GET,RequestMethod.DELETE})
+	public String logout(HttpServletRequest request) {
+		request.getSession().invalidate();
+		System.out.println("Log out");
+		return "index";
+
+	}
 
 	@RequestMapping(value = "/login/{eid}", method = {RequestMethod.GET})
 	public String login(Model model, HttpServletRequest request) {

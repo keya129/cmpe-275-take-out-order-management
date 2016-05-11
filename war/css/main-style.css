@@ -869,3 +869,5 @@ p.footer-head a:hover{
 }
 .blackstrip{position:fixed;top:0;left:0;width:100%;height:30px;color:#fff;background:black;}
 .blackstrip p{padding:6px;text-align:center;}
+.signup input[type="number"],.signup input[type="file"]{width:44.5%;    padding: 5px;margin: 10px 0;}
+.hidenow{display:none;}

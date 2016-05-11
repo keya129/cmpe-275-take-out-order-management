@@ -39,5 +39,7 @@
 			<attribute name="maven.scope" value="compile"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/Users/keya/Downloads/mail-1.4.7.jar"/>
+	<classpathentry kind="lib" path="/Users/keya/Downloads/commons-io-2.3.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

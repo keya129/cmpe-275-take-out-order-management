@@ -3,6 +3,11 @@
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ page import="com.google.appengine.api.datastore.KeyFactory"%>
+<%@ page import="com.google.appengine.api.blobstore.BlobstoreServiceFactory"%>
+<%@ page import="com.google.appengine.api.blobstore.BlobstoreService"%>
+<%
+BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+%>
 <%@ page session="true"%>
     
 <!DOCTYPE HTML>
@@ -23,13 +28,20 @@
 <script type="text/javascript" src="../js/move-top.js"></script>
 <script type="text/javascript" src="../js/easing.js"></script>
 					<script type="text/javascript">
+				    function GetSelectedTextValue(ddlFruits) {
+				        var selectedText = ddlFruits.options[ddlFruits.selectedIndex].innerHTML;
+				        var selectedValue = ddlFruits.value;
+				        //alert("Selected Text: " + selectedText + " Value: " + selectedValue);
+				        document.getElementById("categoryType").value=selectedValue;
+				    }
+
 					jQuery(document).ready(function($) {
 						$(".scroll").click(function(event){		
 							event.preventDefault();
 							$('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
 						});
 						$("#logout").click(function(e){
-						alert();
+						//alert();
 							e.preventDefault();
 							//var url=window.location.href+"/logout";
 							//alert(url);
@@ -37,8 +49,16 @@
 							    location.reload();
 	
 							});
+							
 
 
+						});
+						$("a#register").click(function(e){
+							e.preventDefault();
+							var email=$(this).parent().find('#email').val();
+							//alert("/profile/"+email);
+							$.post("/profile/"+email);
+							$('.hidenow').show();
 						});
 					});
 					</script>
@@ -52,13 +72,28 @@
 		</script>
 </head>
 <body>
+<%
+   Cookie cookie = null;
+   Cookie[] cookies = null;
+   // Get an array of Cookies associated with this domain
+   cookies = request.getCookies();
+   if( cookies != null ){
+      out.println("<h2> Found Cookies Name and Value</h2>");
+      for (int i = 0; i < cookies.length; i++){
+         cookie = cookies[i];
+         out.print("Name : " + cookie.getName( ) + ",  ");
+         out.print("Value: " + cookie.getValue( )+" <br/>");
+      }
+  }else{
+      out.println("<h2>No cookies founds</h2>");
+  }
+%>
+
 	<!--- Header Starts Here --->
 	<div class="header" id="home">
 		<div class="container">
-		<div class="blackstrip"><c:if test='${Errormsg}'>
-<p><c:out value ='${Errormsg}'/></p></c:if>
-<c:if test='${categoryform}'>
-<p><c:out value ='${message}'/></p></c:if>
+		<div class="blackstrip">
+<p><c:out value ='${Errormsg}'/> <c:out value ='${message}'/></p>
 </div>
 			<div class="logo">
 				 <a href="index.html"><img src="images/logo.png" alt=""></a>
@@ -81,6 +116,7 @@
 					<li><a class="play-icon popup-with-zoom-anim" href="#small-dialog1">Sign up</a></li>
 <% if (username == "admin") { %>
 					<li><a class="play-icon popup-with-zoom-anim" href="#small-dialog2">Add Category</a></li>
+					
 <% } %>
 					<li><div class="main">
 								<section>
@@ -112,24 +148,37 @@
 							<h4>Enter Your Details Here</h4>
 							<input type="text" value="First Name" name="firstName" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'First Name';}" />
 							<input type="text" value="Second Name" name="lastName" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Second Name';}" />
-							<input type="text" class="email" name="email" value="Enter Email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Enter Email';}"  />
+							<input type="email" class="email" id="email" name="email" value="Enter Email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Enter Email';}"  />
 							<input type="password" value="Password" name="password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}"/>
+							<a href="#" id="register">Register</a>
+							<div class="hidenow">
+							<input type="number" placeholder="Verification Code" value="" name="code" />
 							<input type="submit"  value="SignUp"/>
+							</div>
 							</form:form>
 						</div>
 					</div>
 					<div id="small-dialog2" class="mfp-hide">
 						<div class="signup">
-							<form:form   modelAttribute="categoryform" id="categoryform" action="/menu/createMenu">
+							<form:form   modelAttribute="categoryform" id="categoryform" action="" method="post" enctype="multipart/form-data">
 						
 							<h3>Add new category</h3>
 							<h4>Enter Your Details Here</h4>
-							<input type="text" value="CategoryType" name="categoryType" id="categoryType" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'CategoryType';}" />
-							<input type="text" value="Item" name="name" id="name" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'name';}" />
-							<input type="text" id="url" name="url" value="URL" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'URL';}"  />
-							<input type="text" value="Price" name="price" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'price';}"/>
-							<input type="text" value="Calories" name="calories" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'calories';}"/>
-							<input type="text" value="PrepTime" name="prepTime" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'prepTime';}"/>
+							Category Type:
+							<select name="category1" onchange="GetSelectedTextValue(this)" id="cat">
+  <option value="Appetizer" selected="selected">Appetizer</option>
+  <option value="Maincourse">Maincourse</option>
+  <option value="Drink">Drink</option>
+  <option value="Desert">Desert</option>
+    <option value="Desert">Desert</option>
+  
+</select>
+							<input type="hidden" value="CategoryType" name="category" id="categoryType" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'CategoryType';}" />
+							<input type="text" required placeholder="Item" value="Item" name="name" id="name" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'name';}" />
+							<input type="file" required name="menuImage" id="url" value="URL">
+							<input type="number"  required value="Price" placeholder="Price" name="price" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'price';}"/>
+							<input type="number" required value="Calories" placeholder="Calories" name="calories" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'calories';}"/>
+							<input type="number" required value="PrepTime" placeholder="Preparation Time" name="preptime" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'prepTime';}"/>
 							<input type="submit"  value="Add"/>
 							</form:form>
 						</div>

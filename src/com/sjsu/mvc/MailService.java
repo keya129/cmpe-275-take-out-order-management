@@ -10,7 +10,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 public class MailService {
-	public void sendSimpleMail() {
+	public static void sendSimpleMail() {
 		Properties props = new Properties();
 		props.put("mail.smtp.host", "smtp.gmail.com");
 		props.put("mail.smtp.socketFactory.port", "465");
@@ -29,7 +29,7 @@ public class MailService {
 		try {
 
 			Message message = new MimeMessage(session);
-			message.setFrom(new InternetAddress("admin@cooktail.com"));
+			message.setFrom(new InternetAddress("Foodie@gmail.com"));
 			message.setRecipients(Message.RecipientType.TO,
 					InternetAddress.parse("keyabhatt90@gmail.com"));
 			message.setSubject("Testing Subject");

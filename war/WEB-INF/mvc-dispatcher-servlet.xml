@@ -1,13 +1,18 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:task="http://www.springframework.org/schema/task
+	http://www.springframework.org/schema/task/spring-task-3.0.xsd"
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans     
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/context 
         http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
         http://www.springframework.org/schema/mvc
-        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd"
+        >
 
 	<context:component-scan base-package="com.sjsu.mvc" />
 	<mvc:annotation-driven />
@@ -23,11 +28,46 @@
 	</bean>
 	   
     <bean id="personDAO" class="com.sjsu.mvc.dao.PersonDAOImpl"/>
-        
-  
+    <bean id  = "EmployeeDAO" class = "com.sjsu.mvc.dao.EmployeeDAOImpl" />
+    <bean id = "ShiftAssignmentDAO" class = "com.sjsu.mvc.dao.ShiftAssignmentDAOImpl" />  
+       <bean id="menuServiceDAO" class="com.sjsu.mvc.dao.MenuServiceDAOImpl"/>  
+      <bean id="ShiftAssignmentService" class="com.sjsu.mvc.service.ShiftAssignmentServiceImpl">
+        <property name="ShiftAssignmentDAO" ref="ShiftAssignmentDAO"></property>
+    </bean>      
+       <bean id = "ordersDao" class = "com.sjsu.mvc.dao.OrdersDao" />
+       <bean id = "orderService" class = "com.sjsu.mvc.service.OrderService">
+           <property name = "ordersDao" ref = "ordersDao"></property>
+       </bean>
+    
     <bean id="personService" class="com.sjsu.mvc.service.PersonServiceImpl">
         <property name="personDAO" ref="personDAO"></property>
     </bean>
+    <bean id = "schedulerJobs" class = "com.sjsu.mvc.service.SchedulerJobs" />
+     <bean id="employeeService" class="com.sjsu.mvc.service.EmployeeServiceImpl">
+        <property name="EmployeeDAO" ref="EmployeeDAO"></property>
+    </bean>   
+
+        <bean id="menuService" class="com.sjsu.mvc.service.MenuServiceImpl">
+        <property name="menuServiceDAO" ref="menuServiceDAO"></property>
+    </bean>
+<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+<property name="maxUploadSize" value="3857492" />
+</bean>
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+<property name="host" value="smtp.gmail.com" />
+<property name="port" value="587" />
+<property name="username" value="emailfoodie@gmail.com" />
+<property name="password" value="abcde@12" />
+<property name="javaMailProperties">
+<props>
+<prop key="mail.transport.protocol">smtp</prop>
+<prop key="mail.smtp.auth">true</prop>
+<prop key="mail.smtp.starttls.enable">true</prop>
+</props>
+</property>
+</bean>
+
+
     <context:component-scan base-package="com.sjsu.mvc" />
 
 </beans>

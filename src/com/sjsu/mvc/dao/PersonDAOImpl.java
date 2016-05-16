@@ -10,30 +10,39 @@ import javax.jdo.Query;
 import com.sjsu.mvc.PMF;
 import com.sjsu.mvc.EMFService;
 import com.sjsu.mvc.model.Profile;
+
  
 
 public class PersonDAOImpl implements PersonDAO {
      	 
     @Override
     public Profile getPersonById(String id) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+    	EntityManager em = EMFService.get().createEntityManager();
+		//PersistenceManager pm = PMF.get().getPersistenceManager();
 		/*Query q = pm.newQuery(Profile.class);
 		q.setFilter("id == id");
 	    List<Profile> results = (List<Profile>) q.execute();
         Profile p = new Profile();
         p = results.get(Integer.parseInt(id));*/
-        Profile p = pm.getObjectById(Profile.class, id);
+        //Profile p = pm.getObjectById(Profile.class, id);
+    		
+    	javax.persistence.Query q = em.createQuery("Select p from Profile p where p.id  = :id");
+    	Profile p = (Profile) q.setParameter("id",id).getResultList();  	
         return p;
     }
 
 	@Override
 	public void createorUpdate(Profile  p) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		EntityManager em = EMFService.get().createEntityManager();
 		try {
-			System.out.println(p.getFirstName());
-			pm.makePersistent(p);
+			System.out.println("Creating" +p.getEmail());
+			
+			em.getTransaction().begin();
+			em.persist(p);
+			System.out.println("persisted");
+			em.getTransaction().commit();
 		} finally {
-			pm.close();
+			em.close();
 		}
 	    
 	}
@@ -41,7 +50,15 @@ public class PersonDAOImpl implements PersonDAO {
 		EntityManager em = EMFService.get().createEntityManager();
 		
 		try{
-			if(em.find( Profile.class, email )!=null){
+			
+			Profile p = em.find(Profile.class, email);
+			System.out.println(p.getEmail());
+			System.out.println(p.getid());
+			if(p.getEmail().equals(email))
+			return true;
+			else 
+		    return false;
+		/*	if(em.find( Profile.class, email )!=null){
 				 Profile p = em.find( Profile.class, email );
 				 System.out.println(p.getFirstName());
 					 if(p.getPassword().equals(password)){
@@ -51,8 +68,8 @@ public class PersonDAOImpl implements PersonDAO {
 				 return false;
 			 }
 			 else{
-				 return false;
-			 }
+				 return false; 
+			 } */
 			 
 		}finally{
 			em.close();
@@ -61,14 +78,14 @@ public class PersonDAOImpl implements PersonDAO {
 	}
 	@Override
 	public void remove(String id) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		EntityManager em = EMFService.get().createEntityManager();
 		try {
 
-			Profile p = pm.getObjectById(Profile.class,id);
-			pm.deletePersistent(p);
+			javax.persistence.Query q= em.createQuery("Delete from Profile p where p.id = :id");
+            q.setParameter("id",id).executeUpdate();		
 
 		} finally {
-			pm.close();
+			em.close();
 		}
 
 		

@@ -1,15 +1,29 @@
 package com.sjsu.mvc;
 
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.persistence.Entity;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.util.Streams;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -34,16 +48,20 @@ import com.sjsu.mvc.service.PersonService;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.datastore.Blob;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.ServingUrlOptions;
 
+
 @Controller
-@RequestMapping("/menu")
 public class MenuController {
 
 	private MenuService menuService;
-
+	 private BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+	 
 	@Autowired(required = true)
 	@Qualifier(value = "menuService")
 	public void setMenuService(MenuService ms) {
@@ -55,53 +73,88 @@ public class MenuController {
 	 */
 	@RequestMapping(value = "/displayMenu", method = { RequestMethod.GET })
 	public String login() {
-		return "createMenu";
-
+		return "index";
 	}
+	
 
 	/**
 	 * This method is for creating the Menu Item
+	 * @throws IOException 
+	 * @throws FileUploadException 
 	 */
 	
 	@RequestMapping(value = "/createMenu", method = RequestMethod.POST)
-	public String createMenu(@RequestParam("category") String category,
-			@RequestParam("name") String name,
-			@RequestParam("price") double price,
-			@RequestParam("calories") int calories,
-			@RequestParam("preptime") int preptime,
-			Model model,HttpServletRequest request) {
-		System.out.println("category " +category);
+	public String createMenu(
+			Model model,HttpServletRequest request,
+			HttpServletResponse response) throws IOException, FileUploadException {
 
-		System.out.println("name " +name);
-		System.out.println("price " +price);
-		System.out.println("calories "+calories);
-		System.out.println("preptime "+preptime);
-
-		String servingUrl;
-		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-		@SuppressWarnings("deprecation")
-		Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(request);
-		BlobKey blobKey = blobs.get("menuImage");
-		
-		if (blobKey == null) {
-			model.addAttribute("message", "No Image Upload");
+    	System.out.println("Here");
+    	
+    	
+   /*    Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
+        List<BlobKey> blobKeys = blobs.get("myFile");
+        String image = null;
+        if (blobKeys == null || blobKeys.isEmpty()) {
+        	model.addAttribute("message", "Image null");
+        	request.getSession().setAttribute("message", "Image null");
 			return "message";
-		}else{
-			servingUrl = blobKey.getKeyString();
-		}
+        } else {
+        	 image = blobKeys.get(0).getKeyString();
+            System.out.println("The blob received" + blobKeys.get(0).getKeyString());
+        }*/
+    	Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
+    	List<BlobKey> blobKeys = blobs.get("url");
+    	String blob = blobKeys.get(0).getKeyString();
+        BlobKey blobKey = new BlobKey(blob);
+        ImagesService services = ImagesServiceFactory.getImagesService();
+        ServingUrlOptions serve = ServingUrlOptions.Builder.withBlobKey(blobKey);    
+        String url = services.getServingUrl(serve);
+       /* Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
+        List<BlobKey> blobKeys = blobs.get("url"); */
+        String image = null;
+        if (blobKey == null || url.isEmpty()) {
+        	model.addAttribute("message", "Image null");
+        	request.getSession().setAttribute("message", "Image null");
+			return "message";
+        } else {
+        	 //image = blobKeys.get(0).getKeyString();
+        	image = url;
+            System.out.println("The blob received" +image);
+        }
+        
+		String category = request.getParameter("category");
+		System.out.println(category);
+		String name = request.getParameter("name");
+		System.out.println(name);
+		double price = Double.parseDouble(request.getParameter("price").trim());
+		System.out.println("price" +price);
+		long calories = Long.parseLong(request.getParameter("calories").trim());
+		System.out.println("calories"+calories);
+		//String image = request.getParameter("url");
+		System.out.println(image);
+		long preptime = Long.parseLong(request.getParameter("preptime").trim());
+		System.out.println("PrepTime"+preptime);
 		
+      
 		
 		if(!category.equals("Appetizer")&&!category.equals("Drink")&&!category.equals("Desert")&&!category.equals("Maincourse")){
+			
 			model.addAttribute("message", "Invalid Category");
+			request.getSession().setAttribute("message", "Invalid Category");
 			return "message";
-		}
+		} 
 		
 		java.util.Date date= new java.util.Date();
 		
 		Menu menu = new Menu();
 		menu.setCategory(category);
 		menu.setName(name);
-		menu.setPicture(servingUrl);
+        UUID idOne = UUID.randomUUID();
+        String id=""+idOne;  
+		//Key key = KeyFactory.createKey(Menu.class.getName(), id);
+		menu.setMenuid(id);
+		System.out.println("Key" +id);
+		menu.setPicture(image);
 		menu.setPrice(price);
 		menu.setCalories(calories);
 		menu.setPreptime(preptime);
@@ -110,19 +163,24 @@ public class MenuController {
 		menu.setTemprating(0);
 		menu.setFinalrating(0);
 		
-		if (menuService.createMenu(menu)) {
+		if (this.menuService.createMenu(menu)) {
 			model.addAttribute("message", "Menu item added successfully");
+	        request.getSession().setAttribute("message", "Menu item added successfully");
+
 			return "message";
 		} else {
 			model.addAttribute("message", "Transaction Failure");
+			request.getSession().setAttribute("message", "Transaction Failure");
 			return "message";
 		}
+        
 		
 	}
 
-	@RequestMapping(value = "/deleteMenu", params = { "id" }, method = RequestMethod.POST)
-	public String deleteMenuItem(Model model, HttpServletRequest request) {
-		if (menuService.deleteMenu(Integer.parseInt(request.getParameter("id")))) {
+	@RequestMapping(value = "/deleteMenu/{id}", method ={RequestMethod.POST, RequestMethod.DELETE} )
+	public String deleteMenuItem(@PathVariable String id,Model model, HttpServletRequest request) {		
+		 System.out.println("The id received is"+id);
+		if (menuService.deleteMenu(id)){
 			model.addAttribute("message", "Menu item deleted successfully");
 			return "message";
 		} else {
@@ -131,10 +189,10 @@ public class MenuController {
 		}
 	}
 
-	@RequestMapping(value = "/enableMenu", params = { "id" }, method = RequestMethod.POST)
-	public String enableMenuItem(Model model, HttpServletRequest request) {
-		if (menuService.enableMenu(Integer.parseInt(request.getParameter("id")))) {
-			model.addAttribute("message", "Menu item deleted successfully");
+	@RequestMapping(value = "/enableMenu/{id}", method = RequestMethod.POST)
+	public String enableMenuItem(@PathVariable String id ,Model model, HttpServletRequest request) {
+		if (menuService.enableMenu(id)) {
+			model.addAttribute("message", "Menu item enabled successfully");
 			return "message";
 		} else {
 			model.addAttribute("message", "Transaction Failure");
@@ -142,13 +200,23 @@ public class MenuController {
 		}
 	}
 
+	@RequestMapping(value = "/getMenus",method = RequestMethod.GET)
+	public String getMenus( Model model, HttpServletRequest request) {
+		String item = request.getParameter("cat");
+		System.out.println("The item selected is" +item);
+		List<Menu> menu =  this.menuService.getMenubyCat(item);
+		System.out.println(menu.get(0));
+		model.addAttribute("menuitems", menu);
+		return "createOrder";
+	}
+	
 	@RequestMapping(value = "/getMenuList", method = RequestMethod.GET)
 	public String getMenuList(Model model, HttpServletRequest request) {
 
-		List<Menu> menu = menuService.getMenuList();
+		List<Menu> menu = this.menuService.getMenuList();
 		
-		model.addAttribute("message", menu);
-		return "message";
+		model.addAttribute("menuitems", menu);
+		return "index";
 	}
 
 }

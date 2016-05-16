@@ -5,8 +5,15 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
+<script>
+window.location = "/getMenuList";
+</script>
 </head>
 <body>
+
+<% String username = (String)request.getSession().getAttribute("message"); %>
+
+
 <h2>${message}</h2>	
 </body>
 </html>

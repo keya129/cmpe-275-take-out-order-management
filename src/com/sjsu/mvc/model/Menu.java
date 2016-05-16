@@ -2,6 +2,8 @@ package com.sjsu.mvc.model;
 
 import java.util.List;
 
+import javax.jdo.annotations.Extension;
+import javax.jdo.annotations.PrimaryKey;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,33 +14,35 @@ import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-@Entity
-@Table(name = "Menu")
+import org.springframework.web.multipart.MultipartFile;
+
+import com.google.appengine.api.datastore.Blob;
+import com.google.appengine.api.datastore.Key;
+
+@Entity(name = "Menu")
 public class Menu {
 
 	@Id
-	@Column(name = "menuid", nullable = false)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_NUM")
-	@SequenceGenerator(name = "SEQ_NUM", sequenceName = "SEQ_NUM", allocationSize = 1, initialValue = 0)
-	private int menuid;
+	@PrimaryKey
+	@Extension(vendorName="datanucleus", key="gae.encoded-pk", value="true")
+	private String menuid;
 
 	@Column(nullable = false)
 	private String category;
 
-	@Column(nullable = false)
+	@Column
 	private String name;
-
-	@Column(nullable = false)
+	
+	@Column
 	private String picture;
 
 	@Column(nullable = false)
 	private double price;
 
-	@Column(nullable = false)
-	private int calories;
 
-	@Column(nullable = false)
-	private int preptime;
+	private long calories;
+
+	private long preptime;
 
 	@Column(nullable = false)
 	private java.sql.Timestamp created;
@@ -52,26 +56,18 @@ public class Menu {
 	@Column(nullable = false)
 	private float finalrating;
 
-	@ManyToMany(mappedBy = "menuList", fetch = FetchType.EAGER)
-	private List<OrderItem> orderItemList;
 
-	public int getMenuid() {
+	public String getMenuid() {
 		return menuid;
 	}
 
-	public List<OrderItem> getOrderItemList() {
-		return orderItemList;
-	}
 
-	public void setOrderItemList(List<OrderItem> orderItemList) {
-		this.orderItemList = orderItemList;
-	}
 
-	public void setMenuid(int menuid) {
+	public void setMenuid(String menuid) {
 		this.menuid = menuid;
 	}
 
-	public String getCategory() {
+	public String getCategory(){
 		return category;
 	}
 
@@ -103,19 +99,19 @@ public class Menu {
 		this.price = price;
 	}
 
-	public int getCalories() {
+	public long getCalories() {
 		return calories;
 	}
 
-	public void setCalories(int calories) {
+	public void setCalories(long calories) {
 		this.calories = calories;
 	}
 
-	public int getPreptime() {
+	public long getPreptime() {
 		return preptime;
 	}
 
-	public void setPreptime(int preptime) {
+	public void setPreptime(long preptime) {
 		this.preptime = preptime;
 	}
 

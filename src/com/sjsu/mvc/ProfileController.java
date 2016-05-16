@@ -1,5 +1,7 @@
 package com.sjsu.mvc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -13,6 +15,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -30,10 +34,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+import org.joda.time.Minutes;
 
+import com.sjsu.mvc.dao.MenuServiceDAO;
+import com.sjsu.mvc.model.Employee;
+import com.sjsu.mvc.model.Menu;
 import com.sjsu.mvc.model.Profile;
+import com.sjsu.mvc.model.ShiftAssignment;
+import com.sjsu.mvc.service.EmployeeService;
 import com.sjsu.mvc.service.PersonService;
-import com.sjsu.mvc.MailService;
+import com.sjsu.mvc.service.ShiftAssignmentService;
+import com.sjsu.mvc.service.MenuService;
+import com.sjsu.mvc.service.MenuServiceImpl;
+
 
 
  
@@ -41,6 +54,8 @@ import com.sjsu.mvc.MailService;
 public class ProfileController {
      
     private PersonService personService;
+
+    
     @Autowired
 	private JavaMailSender mailSender;
     Long  s;
@@ -50,6 +65,8 @@ public class ProfileController {
     public void setPersonService(PersonService ps){
         this.personService = ps;
     }
+    
+    
 	/**
 	 * This method is for creating the Profile
 	 */
@@ -63,15 +80,17 @@ public class ProfileController {
 	 */
 	@RequestMapping(value = "/login", method = {RequestMethod.GET,RequestMethod.DELETE})
 	public String login(HttpServletRequest request) {
+		
 		return "index";
 
 	}
 	@RequestMapping(value = "/index", method = {RequestMethod.GET,RequestMethod.DELETE})
 	public String index(HttpServletRequest request) {
+		
 		return "index";
 
 	}
-	@RequestMapping(value = "/logout", method = {RequestMethod.GET,RequestMethod.DELETE})
+	@RequestMapping(value = "/logout", method = {RequestMethod.GET})
 	public String logout(HttpServletRequest request) {
 		request.getSession().invalidate();
 		System.out.println("Log out");
@@ -149,9 +168,10 @@ public class ProfileController {
 	    public void prepare(MimeMessage mimeMessage) throws Exception {
 	    MimeMessageHelper messageHelper = new MimeMessageHelper(
 	    mimeMessage, true, "UTF-8");
+	    messageHelper.setFrom("emailfoodie@gmail.com");
 	    messageHelper.setTo(emailTo);
 	    messageHelper.setSubject(subject);
-	    messageHelper.setReplyTo(yourmailid);
+	   // messageHelper.setReplyTo(yourmailid);
 	    messageHelper.setText(message);
 	    
 	     
@@ -162,16 +182,18 @@ public class ProfileController {
 	@RequestMapping(value="/profile",params = {"firstName", "lastName", "email", "password","code"},method = RequestMethod.POST) 
 	public String createOrUpdate(Model model,HttpServletRequest request) {
         Profile p = new Profile();
+     
         p.setFirstName(request.getParameter("firstName"));
         p.setLastName(request.getParameter("lastName"));
         p.setEmail(request.getParameter("email"));
         p.setPassword(request.getParameter("password"));
+    
         System.out.println(p);
         System.out.println("value of s "+s);
         System.out.println("value of code "+request.getParameter("code"));
 
         if(request.getParameter("code").equals(s.toString())){
-        personService.createorUpdate(p);
+        this.personService.createorUpdate(p);
 		model.addAttribute("Errormsg","User is created");}
         else{
     		model.addAttribute("Errormsg","User is not created as verification code did not match. Try Again");
@@ -182,29 +204,32 @@ public class ProfileController {
 		return "index";
 	} 
 	@RequestMapping(value="/login",params = {"email", "password"},method = RequestMethod.POST)
-	public String checkLogin(Model model, HttpServletRequest request,@CookieValue(value = "user", defaultValue = "customer") HttpServletResponse response) { 
+	public String checkLogin(Model model, HttpServletRequest request,HttpServletResponse response) { 
 		String emailstr = request.getParameter("email");
 		String password = request.getParameter("password");
 		
 		System.out.println("Email is "+emailstr+" Pass is" +password);
 		if(emailstr.equals("admin") && password.equals("admin")){
 	        request.getSession().setAttribute("user", "admin");
-	        response.addCookie(new Cookie("user", "admin"));
+	       // response.addCookie(new Cookie("user", "admin"));
 	        System.out.println(request.getSession().getAttribute("user"));
-	        return "index";
+	        
+	       
+	        return "redirect:getMenuList";
 		}
 		else if(personService.checkLogin(emailstr, password)){
 			System.out.println("validated");
-		        request.getSession().setAttribute("user", "customer");
+		        request.getSession().setAttribute("user", emailstr);
 		        response.addCookie(new Cookie("user", "customer"));
-		        
-
 		        System.out.println(request.getSession().getAttribute("user"));
-			return "index";}
+		       
+		        return "redirect:getMenuList";
+		}
 		else{
 			System.out.println("not validated");
 			model.addAttribute("Errormsg","User is not validated");
 
 		return "index";}
 	}
+
 }

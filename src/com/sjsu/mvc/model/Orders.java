@@ -1,14 +1,23 @@
 package com.sjsu.mvc.model;
+import java.util.Collection;
+import java.util.List;
 
+import javax.jdo.annotations.Extension;
+import javax.jdo.annotations.PrimaryKey;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import org.joda.time.DateTime;
+
+import com.google.appengine.api.datastore.Key;
 
 @Entity
 @Table(name = "Orders")
@@ -16,39 +25,49 @@ public class Orders {
 
 	@Id
 	@Column(name = "orderid", nullable = false)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_NUM1")
-	@SequenceGenerator(name = "SEQ_NUM1", sequenceName = "SEQ_NUM1", allocationSize = 1, initialValue = 1)
-	private int orderid;
+	@Extension(vendorName="datanucleus", key="gae.encoded-pk", value="true")
+	@PrimaryKey
+	private String orderid;
 
 	@Column(nullable = false)
 	private String userid;
 
 	@Column(nullable = false)
-	private java.sql.Timestamp pickupdt;
+	private DateTime pickupdt;
 
 	@Column(nullable = false)
-	private java.sql.Timestamp fulfildt;
+	private DateTime fulfildt;
 
 	@Column(nullable = false)
-	private java.sql.Timestamp readydt;
+	private DateTime readydt;
 
 	@Column(nullable = false)
-	private java.sql.Timestamp orderdt;
-
+	private DateTime orderdt;
+	
 	@Column(nullable = false)
 	private double totalamount;
-
+	
 	@Column(nullable = false)
 	private String ostatus;
+	
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<OrderItem> orderItems; 
+	
+	
+	
+	public List<OrderItem> getOrderItems() {
+		return orderItems;
+	}
 
-	@OneToMany(mappedBy = "orders", targetEntity = OrderItem.class, fetch = FetchType.EAGER)
-	private OrderItem orderItem;
+	public void setOrderItems(List<OrderItem> orderItems) {
+		this.orderItems = orderItems;
+	}
 
-	public int getOrderid() {
+	public String getOrderid() {
 		return orderid;
 	}
 
-	public void setOrderid(int orderid) {
+	public void setOrderid(String orderid) {
 		this.orderid = orderid;
 	}
 
@@ -60,35 +79,35 @@ public class Orders {
 		this.userid = userid;
 	}
 
-	public java.sql.Timestamp getPickupdt() {
+	public DateTime getPickupdt() {
 		return pickupdt;
 	}
 
-	public void setPickupdt(java.sql.Timestamp pickupdt) {
+	public void setPickupdt(DateTime pickupdt) {
 		this.pickupdt = pickupdt;
 	}
 
-	public java.sql.Timestamp getFulfildt() {
+	public DateTime getFulfildt() {
 		return fulfildt;
 	}
 
-	public void setFulfildt(java.sql.Timestamp fulfildt) {
+	public void setFulfildt(DateTime fulfildt) {
 		this.fulfildt = fulfildt;
 	}
 
-	public java.sql.Timestamp getReadydt() {
+	public DateTime getReadydt() {
 		return readydt;
 	}
 
-	public void setReadydt(java.sql.Timestamp readydt) {
+	public void setReadydt(DateTime readydt) {
 		this.readydt = readydt;
 	}
 
-	public java.sql.Timestamp getOrderdt() {
+	public DateTime getOrderdt() {
 		return orderdt;
 	}
 
-	public void setOrderdt(java.sql.Timestamp orderdt) {
+	public void setOrderdt(DateTime orderdt) {
 		this.orderdt = orderdt;
 	}
 
@@ -107,13 +126,23 @@ public class Orders {
 	public void setOstatus(String ostatus) {
 		this.ostatus = ostatus;
 	}
+	
+	/*@OneToMany
+    @JoinTable(name="Orditem", 
+          joinColumns=@JoinColumn(name="orderid"),
+          inverseJoinColumns=@JoinColumn(name="id"))
+    private Collection<OrderItem> orderItem;*/
 
-	public OrderItem getOrderItem() {
+	/*public OrderItem getOrderItem() {
 		return orderItem;
 	}
 
 	public void setOrderItem(OrderItem orderItem) {
 		this.orderItem = orderItem;
-	}
-
+	}*/
+	
+	
+	
+	
 }
+

@@ -1,14 +1,19 @@
 package com.sjsu.mvc.model;
  
+import java.io.Serializable;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import com.google.appengine.api.datastore.Key;
 /**
@@ -16,63 +21,73 @@ import com.google.appengine.api.datastore.Key;
  * @author
  *
  */
-@PersistenceCapable
-public class Profile {
+
+
+@Entity
+public class Profile implements Serializable{
  
-	
-    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    private Long id;
-	@Persistent 
-    private String firstName;
-	@Persistent
-    private String lastName;
 	@PrimaryKey
-	@Persistent
-    private String email;
-	@Persistent
+	@Column
+	@Id
+	private String email;
+		
+    @Column
+    private String firstName;
+    
+    @Column
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column
+    private String lastName;
+
+    @Column
     private String password;
-	@Persistent
+    
+    @Column
     private String userType;
 
-    public Long getId() {
-    	return id;
+    public void setEmail(String newemail){
+    	this.email = newemail;
     }
-    public void setId(Long newId){
-       this.id = newId;	
+  
+    public String getEmail() {
+    	return this.email;
     }
-    
+
     public String getFirstName(){
-    	return firstName;
+    	return this.firstName;
     }
     public void setFirstName(String newfirstname){
     	this.firstName = newfirstname;
     }
     public String getLastName() {
-    	return lastName;
+    	return this.lastName;
     }
     public void setLastName(String newlastname)
     {
     	this.lastName = newlastname;
     }
     public String getUSer() {
-    	return lastName;
+    	return this.lastName;
     }
     public void setUSer(String user)
     {
     	this.userType = user;
     }
 
-    public String getEmail() {
-    	return email;
-    }
-    public void setEmail(String newemail){
-    	this.email = newemail;
-    }
     public String getPassword(){
-    	return password;
+    	return this.password;
     }
     public void setPassword(String newaddress){
     	this.password = newaddress;
     }
+    public Long getid(){
+    	return this.id;
+    }
+    public void setid(Long newid){
+    	this.id = newid;
+    }
+
      
 }

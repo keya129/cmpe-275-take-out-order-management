@@ -4,7 +4,7 @@ package com.sjsu.mvc.service;
 import java.util.List;
 import javax.persistence.Entity;
 
-
+import com.google.appengine.api.datastore.Key;
 import com.sjsu.mvc.dao.MenuServiceDAO;
 import com.sjsu.mvc.model.Menu;
 
@@ -37,17 +37,23 @@ public class MenuServiceImpl implements MenuService {
 	}
 
 	@Override
-	public boolean deleteMenu(int id) {
+	public boolean deleteMenu(String id) {
 		// TODO Auto-generated method stub
 		return this.menuServiceDAO.deleteMenu(id);
 
 	}
 
 	@Override
-	public boolean enableMenu(int id) {
+	public boolean enableMenu(String id) {
 		// TODO Auto-generated method stub
 		return this.menuServiceDAO.enableMenu(id);
 
+	}
+
+	@Override
+	public List<Menu> getMenubyCat(String cat) {
+		// TODO Auto-generated method stub
+		return this.menuServiceDAO.getMenubyCat(cat);
 	}
 
 }

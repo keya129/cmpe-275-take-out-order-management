@@ -28,7 +28,7 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 <script type="text/javascript" src="../js/move-top.js"></script>
 <script type="text/javascript" src="../js/easing.js"></script>
 					<script type="text/javascript">
-				    function GetSelectedTextValue(ddlFruits) {
+					function GetSelectedTextValue(ddlFruits) {
 				        var selectedText = ddlFruits.options[ddlFruits.selectedIndex].innerHTML;
 				        var selectedValue = ddlFruits.value;
 				        //alert("Selected Text: " + selectedText + " Value: " + selectedValue);
@@ -36,21 +36,90 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 				    }
 
 					jQuery(document).ready(function($) {
+						
+
+						
+						
+						$("#order").click(function(e){
+							e.preventDefault();
+							
+							var menuCount=0;
+							var menuid="";
+							var menuname="";
+							var menucategory="";
+							var menuqty="";
+							var menuamount="";
+							var pickup="";
+							var preptime="";
+							alert("I am ordering");
+							$('.portfolio-start .portfolio-img').each(function(e){
+								menuCount++;
+							menuid=menuid+$(this).find('#menuid').text()+",";
+							menuname=menuname+$(this).find('h4').text()+",";
+							menuamount=menuamount+$(this).find('#price').text()+",";
+							menucategory=menucategory+$(this).find("#menucat").text()+",";
+							preptime=preptime+$(this).find('#menupreptime').text()+",";
+							menuqty=menuqty+$(this).find().val('qty')+",";
+							pickup=pickup+$(this).find().val('date')+",";
+							
+							})
+							var dt = new Date();
+							var hrs=dt.getHours()+1;
+							var timedt = hrs + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+							console.log("Menu id "+menuid);
+							console.log("menuname "+menuname);
+							console.log("menuamount "+menuamount);
+							console.log("menucategory "+menucategory);
+							console.log("preptime "+preptime);
+							console.log("menuqty "+menuqty);
+							console.log("pickup "+timedt);
+							$('#form1id').val('bhavana.bhasker@gmail.com');
+							$('#form2id').val(menuCount);
+							$('#form3id').val(menuid);
+							$('#form4id').val(menuname);
+							$('#form5id').val(menucategory);
+							$('#form6id').val(menuqty);
+							$('#form7id').val(menuamount);
+							$('#form8id').val("11/05/2016 "+timedt);
+							$('#form9id').val(preptime);
+							$('#myform form').submit();
+							/*<input type="hidden" id="form1id" name="userid"/>
+								<input type="hidden" id="form2id" name="menuCount"/>
+								<input type="hidden" id="form3id" name="menuid"/>
+								<input type="hidden" id="form4id" name="menuname" />
+								<input type="hidden" id="form5id" name="menucategory"/>
+								<input type="hidden" id="form6id" name="menuqty"/>
+								<input type="hidden" id="form7id" name="menuamount"/>
+								<input type="hidden" id="form8id" name="pickup"/>
+								<input type="hidden" id="form9id" name="preptime"/>*/
+							
+						});
+						$('.portfolio-start .portfolio-img').each(function(e){
+						
+							$('#myform table').append('<tr class="child"><td>'+$(this).find('h4').text()+'</td></tr>');
+							$('#myform table').append('<tr class="child"><td>'+$(this).find('#price').text()+'</td></tr>');
+							$('#myform table').append('<tr class="child"><td>'+$(this).find().val('qty')+'</td></tr>');
+						
+						});
+						
 						$(".scroll").click(function(event){		
 							event.preventDefault();
 							$('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
 						});
+						$("#orderdetails").click(function(event){		
+							event.preventDefault();
+							$(document).scrollTo('#orderdetails');
+						});
 						$("#logout").click(function(e){
 						//alert();
-							e.preventDefault();
+							 e.preventDefault();
 							//var url=window.location.href+"/logout";
 							//alert(url);
 							$.get("/logout",function(){
-							    location.reload();
-	
-							});
+							    location.reload(); 
+							  
+							}); 
 							
-
 
 						});
 						$("a#register").click(function(e){
@@ -60,6 +129,22 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 							$.post("/profile/"+email);
 							$('.hidenow').show();
 						});
+						$("#deleteMenu").click(function(e){
+							e.preventDefault();
+							//var email=$(this).parent().find('#email').val();
+							//alert("/profile/"+email);
+						
+							$.post("/profile/"+"");
+							$('.hidenow').show();
+						});
+						$("#enableMenu").click(function(e){
+							e.preventDefault();
+							//var email=$(this).parent().find('#email').val();
+							//alert("/profile/"+email);
+							$.post("/profile/");
+							$('.hidenow').show();
+						});
+						
 					});
 					</script>
 <script type="text/javascript" src="../js/jquery.jscrollpane.min.js"></script>
@@ -75,25 +160,30 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 <%
    Cookie cookie = null;
    Cookie[] cookies = null;
+   String user="";
    // Get an array of Cookies associated with this domain
    cookies = request.getCookies();
    if( cookies != null ){
-      out.println("<h2> Found Cookies Name and Value</h2>");
+      //out.println("<h2> Found Cookies Name and Value</h2>");
       for (int i = 0; i < cookies.length; i++){
          cookie = cookies[i];
-         out.print("Name : " + cookie.getName( ) + ",  ");
-         out.print("Value: " + cookie.getValue( )+" <br/>");
-      }
-  }else{
-      out.println("<h2>No cookies founds</h2>");
+         if(cookie.getName()=="user"){
+      	    user=cookie.getValue();
+      	}
   }
+   }
 %>
-
+<% String message = (String)request.getSession().getAttribute("message"); %>
 	<!--- Header Starts Here --->
 	<div class="header" id="home">
 		<div class="container">
 		<div class="blackstrip">
-<p><c:out value ='${Errormsg}'/> <c:out value ='${message}'/></p>
+<p>
+<c:out value ='${Errormsg}'/>&nbsp;&nbsp; 
+<c:out value ='${message}'/>&nbsp;&nbsp;
+<c:out value ='${Pickuptime}'/>&nbsp;&nbsp;
+<c:out value ='${TotalAmount}'/>
+</p>
 </div>
 			<div class="logo">
 				 <a href="index.html"><img src="images/logo.png" alt=""></a>
@@ -115,7 +205,7 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 					<% } %>
 					<li><a class="play-icon popup-with-zoom-anim" href="#small-dialog1">Sign up</a></li>
 <% if (username == "admin") { %>
-					<li><a class="play-icon popup-with-zoom-anim" href="#small-dialog2">Add Category</a></li>
+					<li><a class="play-icon popup-with-zoom-anim" href="#small-dialog2">Add Menu</a></li>
 					
 <% } %>
 					<li><div class="main">
@@ -160,9 +250,9 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 					</div>
 					<div id="small-dialog2" class="mfp-hide">
 						<div class="signup">
-							<form:form   modelAttribute="categoryform" id="categoryform" action="" method="post" enctype="multipart/form-data">
+							 <form action=<%= blobstoreService.createUploadUrl("/createMenu") %> method="post"  enctype="multipart/form-data">
 						
-							<h3>Add new category</h3>
+							<h3>Add new Menu</h3>
 							<h4>Enter Your Details Here</h4>
 							Category Type:
 							<select name="category1" onchange="GetSelectedTextValue(this)" id="cat">
@@ -170,17 +260,17 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
   <option value="Maincourse">Maincourse</option>
   <option value="Drink">Drink</option>
   <option value="Desert">Desert</option>
-    <option value="Desert">Desert</option>
+   
   
 </select>
-							<input type="hidden" value="CategoryType" name="category" id="categoryType" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'CategoryType';}" />
+							<input type="hidden" name="category" id="categoryType" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'CategoryType';}" />
 							<input type="text" required placeholder="Item" value="Item" name="name" id="name" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'name';}" />
-							<input type="file" required name="menuImage" id="url" value="URL">
+							<input type="file" required name="url" id="url" value="URL">
 							<input type="number"  required value="Price" placeholder="Price" name="price" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'price';}"/>
 							<input type="number" required value="Calories" placeholder="Calories" name="calories" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'calories';}"/>
 							<input type="number" required value="PrepTime" placeholder="Preparation Time" name="preptime" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'prepTime';}"/>
 							<input type="submit"  value="Add"/>
-							</form:form>
+							</form>
 						</div>
 					</div>	
 				 <script>
@@ -217,10 +307,10 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 					</script>
 					<div class="cbp-spmenu-push">
 						<nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-right" id="cbp-spmenu-s2">
-							<h3>Menu</h3>
+							<h3>Foodie</h3>
 							<a href="#home" class="scroll">Home</a>
-							<a href="#about" class="scroll">About</a>
-							<a href="#portfolio" class="scroll">Portfolio</a>
+							
+							<a href="#portfolio" class="scroll">Menu</a>
 						</nav>
 				</div>
 				<script src="../js/classie.js"></script>
@@ -249,121 +339,51 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 				<div class="header-bottom">
 					<p>Find your favorite</p>
 					<h1>RECIPES</h1>
-					<a href="#">Get Started</a>
+					<a href="#order">Order</a>
 					<p class="reward">OR SEND US YOUR OWN RECIPES AND <u>GET REWARDED!</u></p>
 				</div>
 		</div>
 	</div>
 	<!--- Header Ends Here --->
-	<!-- Aboutus Starts Here --->
-	<div class="aboutus" id="about">
+	<% if (username == "admin") { %>
+					<div class="portfolio" id="portfolio">
 		<div class="container">
-			<div class="row aboutus-row">
-				<div class="col-md-4 aboutus-row-column">
-					<i class="icon1"></i>
-					<h3>GET INSPIRED</h3>
-					<span class="line-red"></span>
-					<p>Lorem ipsum dolor sit amet, consectetur adipisc Pellentesque vel enim a elit viverra elementuma.Aliquam erat volutpat. </p>
-				</div>
-				<div class="col-md-4 aboutus-row-column">
-					<i class="icon2"></i>
-					<h3>GET REWARDED</h3>
-					<span class="line-red"></span>
-					<p>Lorem ipsum dolor sit amet, consectetur adipisc Pellentesque vel enim a elit viverra elementuma.Aliquam erat volutpat. </p>
-				</div>
-				<div class="col-md-4 aboutus-row-column">
-					<i class="icon3"></i>
-					<h3>GET SOCIAL</h3>
-					<span class="line-red"></span>
-					<p>Lorem ipsum dolor sit amet, consectetur adipisc Pellentesque vel enim a elit viverra elementuma.Aliquam erat volutpat. </p>
-				</div>
-				<div class="clearfix"></div>
+			<div class="portfolio-top">
+				<h3>BROWSE BY CUISINES-Admin</h3>
+				<span class="linet-red"></span>
 			</div>
-		</div>
-	</div>
-	<!-- Aboutus Ends Here --->
-	<!-- Interduce Starts Here  ---->
-	<div class="interduce">
-		<div class="container">
-			<div class="row interduce-row">
-				<div class="col-md-6 inter-row-column2">
-					<img src="images/iphone-1.png" alt=""/>
-				</div>
-				<div class="col-md-6 inter-row-column">
-					<h4><span>INTRODUCING</span> THE FUDI APP</h4>
-					<p>Morbi eget posuere dolor. Pellentesque cursus aliquet aliquet. Aeneanet felis sit amet diam mollis ullamcorper. Nullam consequat sem a ante vest ibulum tristique. Suspendisse tristique lacus ac mattis porta. </p>
-					<p>Vivamus ligula quam, vehicula non lacinia sed, faucibus sit amet libero. In libero dui, eleifend eu nisi id, egestas fringilla odio. In varius quam a massa hendrerit ullamcorper a eu justo. Suspendisse porta mattis convallis.Aenean tempus ligula ac odio rhoncus, quis aliquam dolor accumsan. </p>
-					<p>Suspendisse aliquet felis consectetur libero congue, sed pulvinar diam malesuada. Duis vehicula a nibh id hendrerit. Donec sit amet ultricesante, a mattis massa. </p>
-					<ul class="inter-duce">
-						<li><i class="icon4"></i></li>
-						<li><i class="icon5"></i></li>
-					</ul>
-				</div>
-				<div class="clearfix"></div>
-			</div>
-		</div>
-	</div>
-	<!-- Interduce Ends Here  ---->
-	<!--- Slider Starts Here --->
-	<div class="slider">
-		<div class="container">
-			<div class="slider-content">
-				<script src="../js/responsiveslides.min.js"></script>
-			 <script>
-			    // You can also use "$(window).load(function() {"
-			    $(function () {
-			      // Slideshow 4
-			      $("#slider4").responsiveSlides({
-			        auto: true,
-			        pager: true,
-			        nav: true,
-			        speed: 500,
-			        namespace: "callbacks",
-			        before: function () {
-			          $('.events').append("<li>before event fired.</li>");
-			        },
-			        after: function () {
-			          $('.events').append("<li>after event fired.</li>");
-			        }
-			      });
+		</div >
+		<div class="portfolio-start">
+		<c:forEach items="${menuitems}" var="menuitem" varStatus="loop">     
+   <div class="portfolio-img">
+					<a href="#small-dialog-it${loop.index}" class="play-icon popup-with-zoom-anim"><img src=<c:out value ='${menuitem.picture}'/> alt="" width="374" height="263"/></a>
+					<div id="small-dialog-it${loop.index}" class="small-dialog-it mfp-hide">
+						<div class="portfolio-items">
+						<img src=<c:out value ='${menuitem.picture}'/> alt="photo" height="200" width="200">
+						
+						
+						<a href="#deleteMenu" id="deleteMenu">DeleteMenu</a>
+						<a href="#enableMenu" id="enableMenu">EnableMenu</a>
+						
+						<h4><c:out value ='${menuitem.name}'/></h4>
 			
-			    });
-			  </script>
-			<!----//End-slider-script---->
-			<!-- Slideshow 4 -->
-			    <div  id="top" class="callbacks_container">
-			      <ul class="rslides" id="slider4">
-			        <li>
-			          <div class="slider-top">
-			          	<img src="images/1.jpg" alt=""/>
-			          	<p>"I am so happy because I found this recipe, and it just made my life easier.<br>Thanks  so much for sharing!"</p>
-			          	<p class="below">- Michael Dawson, San Francisco, CA -</p>
-			          </div>
-			        </li>
-			        <li>
-			          <div class="slider-top">
-			          <img src="images/2.jpg" alt=""/>
-			          	<p>"I am so happy because I found this recipe, and it just made my life easier.<br>Thanks  so much for sharing!"</p>
-			          	<p class="below">- Aaron Dawson, San Francisco, CA -</p>
-			          </div>
-			        </li>
-			        <li>
-			          <div class="slider-top">
-			          	<img src="images/3.jpg" alt=""/>
-			          	<p>"I am so happy because I found this recipe, and it just made my life easier.<br>Thanks  so much for sharing!"</p>
-			          	<p class="below">- Johnson Dawson, San Francisco, CA -</p>
-			          </div>
-			        </li>
-			      </ul>
-			    </div>
-			    <div class="clearfix"> </div>
-	  			<!--- banner Slider Ends Here ---> 
-			</div>
-			</div>
-			</div>
+						
+						<c:out value ='${menuitem.name}'/><div id="menuid"><c:out value ='${menuitem.menuid}'/></div>
+						<div id="menucat"><c:out value ='${menuitem.category}'/></div>
+						<div id="menupreptime"><c:out value ='${menuitem.preptime}'/></div>
+						<div id="price"><c:out value ='${menuitem.price}'/></div></div>
+						
+						</div>
+					</div>
+				
+   
+</c:forEach>
+			<div class="clearfix"></div>
+				</div>
+			
 		</div>
-	</div>
-	<!--- Slider Ends Here --->
+					
+<% }else{ %>			
 	<!--- Portfolio Starts Here --->
 	<div class="portfolio" id="portfolio">
 		<div class="container">
@@ -373,153 +393,90 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 			</div>
 		</div >
 		<div class="portfolio-start">
-				<div class="portfolio-img">
-					<a href="#small-dialog-it" class="play-icon popup-with-zoom-anim"><img src="images/s1.jpg" alt=""/></a>
-					<div id="small-dialog-it" class="mfp-hide">
+		<c:forEach items="${menuitems}" var="menuitem" varStatus="loop">     
+   <div class="portfolio-img">
+					<a href="#small-dialog-it${loop.index}" class="play-icon popup-with-zoom-anim"><img src=<c:out value ='${menuitem.picture}'/> alt="" width="374" height="263"/></a>
+					<div id="small-dialog-it${loop.index}" class="small-dialog-it mfp-hide">
 						<div class="portfolio-items">
-						<img src="images/s1.jpg" alt="">
-						<h4>Italian Food</h4>
-						<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. </p>
+						<img src=<c:out value ='${menuitem.picture}'/> alt="photo" height="200" width="200">
+						
+					
+						<h4><c:out value ='${menuitem.name}'/></h4>
+			
+						<input type="number" name="qty" id="qty">
+					
+						<c:out value ='${menuitem.name}'/><div id="menuid"><c:out value ='${menuitem.menuid}'/></div>
+						<div id="menucat"><c:out value ='${menuitem.category}'/></div>
+						<div id="menupreptime"><c:out value ='${menuitem.preptime}'/></div>
+						<div id="price"><c:out value ='${menuitem.price}'/></div></div>
+						
 						</div>
 					</div>
+				
+   
+</c:forEach>
+			<div class="clearfix"></div>
 				</div>
-				<div class="portfolio-img">
-					<a href="#small-dialog-in" class="play-icon popup-with-zoom-anim"><img src="images/s2.jpg" alt=""/></a>
-					<div id="small-dialog-in" class="mfp-hide">
-						<div class="portfolio-items">
-						<img src="images/s2.jpg" alt="">
-						<h4>Indian Food</h4>
-						<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. </p>
-						</div>
-					</div>
-				</div>
-				<div class="portfolio-img">
-					<a href="#small-dialog-fr" class="play-icon popup-with-zoom-anim"><img src="images/s3.jpg" alt=""/></a>
-					<div id="small-dialog-fr" class="mfp-hide">
-						<div class="portfolio-items">
-						<img src="images/s3.jpg" alt="">
-						<h4>French Food</h4>
-						<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. </p>
-						</div>
-					</div>
-				</div>
-				<div class="portfolio-img">
-					<a href="#small-dialog-sh" class="play-icon popup-with-zoom-anim"><img src="images/s4.jpg" alt=""/></a>
-					<div id="small-dialog-sh" class="mfp-hide">
-						<div class="portfolio-items">
-						<img src="images/s4.jpg" alt="">
-						<h4>Steak House Food</h4>
-						<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. </p>
-						</div>
-					</div>
-				</div>
-				<div class="portfolio-img">
-					<a href="#small-dialog-sf" class="play-icon popup-with-zoom-anim"><img src="images/s5.jpg" alt=""/></a>
-					<div id="small-dialog-sf" class="mfp-hide">
-						<div class="portfolio-items">
-						<img src="images/s5.jpg" alt="">
-						<h4>Sea Food</h4>
-						<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. </p>
-						</div>
-					</div>
-				</div>
-				<div class="clearfix">
-				<div class="portfolio-img">
-					<a href="#small-dialog-su" class="play-icon popup-with-zoom-anim"><img src="images/s6.jpg" alt=""/></a>
-					<div id="small-dialog-su" class="mfp-hide">
-						<div class="portfolio-items">
-						<img src="images/s6.jpg" alt="">
-						<h4>Sushi Food</h4>
-						<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. </p>
-						</div>
-					</div>
-				</div>
-				<div class="portfolio-img">
-					<a href="#small-dialog-me" class="play-icon popup-with-zoom-anim"><img src="images/s7.jpg" alt=""/></a>
-					<div id="small-dialog-me" class="mfp-hide">
-						<div class="portfolio-items">
-						<img src="images/s7.jpg" alt="">
-						<h4>Mexican Food</h4>
-						<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. </p>
-						</div>
-					</div>
-				</div>
-				<div class="portfolio-img">
-					<a href="#small-dialog-ch" class="play-icon popup-with-zoom-anim"><img src="images/s8.jpg" alt=""/></a>
-					<div id="small-dialog-ch" class="mfp-hide">
-						<div class="portfolio-items">
-						<img src="images/s8.jpg" alt="">
-						<h4>Chinese Food</h4>
-						<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. </p>
-						</div>
-					</div>
-				</div>
-				<div class="portfolio-img">
-					<a href="#small-dialog-pi" class="play-icon popup-with-zoom-anim"><img src="images/s9.jpg" alt=""/></a>
-					<div id="small-dialog-pi" class="mfp-hide">
-						<div class="portfolio-items">
-						<img src="images/s9.jpg" alt="">
-						<h4>PIZZA</h4>
-						<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. </p>
-						</div>
-					</div>
-				</div>
-				<div class="portfolio-img">
-					<a href="#small-dialog-am" class="play-icon popup-with-zoom-anim"><img src="images/s10.jpg" alt=""/></a>
-					<div id="small-dialog-am" class="mfp-hide">
-						<div class="portfolio-items">
-						<img src="images/s10.jpg" alt="">
-						<h4>American Food</h4>
-						<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. </p>
-						</div>
-					</div>
-				</div>
-				<div class="clearfix"></div>
-		</div>
+			
+		</div><% } %>
 	</div>
-		<div class="container">
-			<ul class="numbers">
-				<li>
-					<div class="number-top">
-						<h4>23,567</h4>
-						<p>Recipes Available</p>
-					</div>
-				</li>
-				<li>
-					<div class="number-top">
-						<h4>431,729</h4>
-						<p>Active Users</p>
-					</div>
-				</li>
-				<li>
-					<div class="number-top">
-						<h4>892,173</h4>
-						<p>Positive Reviews</p>
-					</div>
-				</li>
-				<li>
-					<div class="number-top">
-						<h4>56,581</h4>
-						<p>Photos & Videos</p>
-					</div>
-				</li>
-				<li>
-					<div class="number-top">
-						<h4>3,182</h4>
-						<p>Spices and Herbs</p>
-					</div>
-				</li>
-			</ul>
-		</div>
+	
 	</div>
 	<!--- Portfolio Ends Here --->
+	<div class="aboutus" id="aboutus">
+		<div class="container">
+		<div class="orderdetais" id="orderdetais">
+		<div class="hide" id="myform">
+		<form method="post" action="/createOrder" id="form-mine">
+		<input type="hidden" id="form1id" name="userid"/>
+		<input type="hidden" id="form2id" name="menuCount"/>
+		<input type="hidden" id="form3id" name="menuid"/>
+		<input type="hidden" id="form4id" name="menuname" />
+		<input type="hidden" id="form5id" name="menucategory"/>
+		<input type="hidden" id="form6id" name="menuqty"/>
+		<input type="hidden" id="form7id" name="menuamount"/>
+		<input type="hidden" id="form8id" name="pickup"/>
+		<input type="hidden" id="form9id" name="preptime"/>
+		</form>
+		</div>
+
+		<input type="button" value="order" id="order" />
+		<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+		<div class="show">
+		<h1 style="margin-top:800px">Your Order History</h1>
+		<table id="mtable" style="background:#f5f5f5;color:#0000;">
+		<thead>
+		<tr>
+		<th width="30%" align="left">Item</th>
+		<th width="10%" align="left">Quantity</th>
+		<th width="30%" align="left">Price</th>
+		<th width="30%" align="left">Status</th>
+		</tr>
+		<thead>
+		<tbody>
+		<tr>
+		<td>American</td>
+		<td>2</td>
+		<td>30</td>
+		<td>Queued</td>
+		</tr>
+		<tr>
+		<td>Italian</td>
+		<td>1</td>
+		<td>40</td>
+		<td>Done</td>
+		</tr>
+		</tbody>
+		</table></div>
+		</div>
+		</div></div>
 	<!-- Footer Starts Here ---->
 	<div class="footer">
 		<div class="container">
 			<div class="footer-top">
 				 <a href="index.html"><img src="images/logo-bot.png" class="img-responsive" alt=""/></a>
 			</div>
-			<p class="footer-head">2016 Website</p>
+			<p class="footer-head">2016 Foodie Website</p>
 			<div class="clearfix"></div>
 		</div>
 	</div>

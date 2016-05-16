@@ -178,14 +178,15 @@ public class MenuController {
 	}
 
 	@RequestMapping(value = "/deleteMenu/{id}", method ={RequestMethod.POST, RequestMethod.DELETE} )
-	public String deleteMenuItem(@PathVariable String id,Model model, HttpServletRequest request) {		
+	public void deleteMenuItem(@PathVariable String id,Model model, HttpServletRequest request) {		
 		 System.out.println("The id received is"+id);
 		if (menuService.deleteMenu(id)){
 			model.addAttribute("message", "Menu item deleted successfully");
-			return "message";
+			System.out.println("Deleted"+id);
+			
 		} else {
 			model.addAttribute("message", "Transaction Failure");
-			return "message";
+			
 		}
 	}
 
@@ -193,10 +194,10 @@ public class MenuController {
 	public String enableMenuItem(@PathVariable String id ,Model model, HttpServletRequest request) {
 		if (menuService.enableMenu(id)) {
 			model.addAttribute("message", "Menu item enabled successfully");
-			return "message";
+			return "redirect:getMenuList";
 		} else {
 			model.addAttribute("message", "Transaction Failure");
-			return "message";
+			return "redirect:getMenuList";
 		}
 	}
 
@@ -212,7 +213,16 @@ public class MenuController {
 	
 	@RequestMapping(value = "/getMenuList", method = RequestMethod.GET)
 	public String getMenuList(Model model, HttpServletRequest request) {
-
+	if(request.getAttribute("message")!=null){	
+	String msg=request.getAttribute("message").toString();
+	model.addAttribute("message",msg);
+	}
+	if(request.getAttribute("Errormsg")!=null){
+	String err=request.getAttribute("Errormsg").toString();
+	model.addAttribute("Errormsg",err);
+	}
+	
+	
 		List<Menu> menu = this.menuService.getMenuList();
 		
 		model.addAttribute("menuitems", menu);

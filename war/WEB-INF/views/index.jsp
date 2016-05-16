@@ -129,20 +129,30 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 							$.post("/profile/"+email);
 							$('.hidenow').show();
 						});
-						$("#deleteMenu").click(function(e){
+						$(".deleteMenu").click(function(e){
 							e.preventDefault();
-							//var email=$(this).parent().find('#email').val();
-							//alert("/profile/"+email);
+							var id=$(this).parent().find('#menuid').text();
+							//alert("/deleteMenu/"+id);
 						
-							$.post("/profile/"+"");
-							$('.hidenow').show();
-						});
-						$("#enableMenu").click(function(e){
+							$.post("/deleteMenu/"+id);
+						    location.reload(); 
+						    $(this).css('display','none');
+						    $(this).parent().find('.enableMenu').css('display','block');
+
+						    
+							});
+							
+						
+						$(".enableMenu").click(function(e){
 							e.preventDefault();
-							//var email=$(this).parent().find('#email').val();
-							//alert("/profile/"+email);
-							$.post("/profile/");
-							$('.hidenow').show();
+							var id=$(this).parent().find('#menuid').text();
+							//alert("/deleteMenu/"+id);
+						
+							$.post("/deleteMenu/"+id);
+						    location.reload(); 
+						    $(this).css('display','none');
+						    $(this).parent().find('.deleteMenu').css('display','block');
+
 						});
 						
 					});
@@ -224,8 +234,8 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 	<form:form  modelAttribute="Errormsg" id="loginform" action="/login">
 							<h3>Log In</h3>
 							<h4>Already a Member</h4>
-							<input type="text" value="Email" name="email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Email';}" />
-							<input type="password" value="Password" name="password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}"/>
+							<input type="text" required value="Email" name="email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Email';}" />
+							<input type="password" required value="Password" name="password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}"/>
 							<input type="submit" value="Login" />
 	</form:form>
 						</div>
@@ -362,8 +372,8 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 						<img src=<c:out value ='${menuitem.picture}'/> alt="photo" height="200" width="200">
 						
 						
-						<a href="#deleteMenu" id="deleteMenu">DeleteMenu</a>
-						<a href="#enableMenu" id="enableMenu">EnableMenu</a>
+						<a href="" class="deleteMenu" >Disable Menu</a>
+						<a href="" class="enableMenu" style="display:none">Enable Menu</a>
 						
 						<h4><c:out value ='${menuitem.name}'/></h4>
 			

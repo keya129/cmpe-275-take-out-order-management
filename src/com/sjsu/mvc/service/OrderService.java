@@ -35,6 +35,17 @@ public class OrderService {
 		return null;
 
 	}
+	public List<Orders> getAllOrders() {
+		// TODO Auto-generated method stub
+		try {
+			return this.ordersDao.getAllOrders();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+
+	}
 
 	public String createOrder(Orders orders) {
 		// TODO Auto-generated method stub

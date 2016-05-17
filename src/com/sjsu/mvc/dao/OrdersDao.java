@@ -66,7 +66,7 @@ public class OrdersDao {
 		EntityTransaction tx = entityManager.getTransaction();
 		try {
 			tx.begin();
-			Query q = entityManager.createQuery("SELECT * FROM Orders m");
+			Query q = entityManager.createQuery("SELECT m FROM Orders m");
 			List<Orders> orders = q.getResultList();
 			tx.commit();
 			return orders;

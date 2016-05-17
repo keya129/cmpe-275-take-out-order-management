@@ -37,10 +37,37 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 
 					jQuery(document).ready(function($) {
 						
-
-						
-						
-						$("#order").click(function(e){
+						var orders = new Array(); 
+						var ordermap={"menu":"","menuid":"","price":"","qty":"","preptime":"","category":""};
+						$(".addcart").click(function(e){
+							e.preventDefault();
+							if($(this).parent().find('#qty').val()!=""){
+							ordermap['menu']=ordermap['menu']+$(this).parent().find('h4').text()+",";
+							ordermap['menuid']=ordermap['menuid']+$(this).parent().find('#menuid').text()+",";
+							ordermap['price']=ordermap['price']+$(this).parent().find('#price').text()+",";
+							ordermap['qty']=ordermap['qty']+$(this).parent().find('#qty').val()+",";
+							ordermap['preptime']=ordermap['preptime']+$(this).parent().find('#menupreptime').text()+",";
+							ordermap['category']=ordermap['category']+$(this).parent().find('#menucat').text()+",";
+							 
+							 orders.push({
+	                 			 'menu' : $(this).parent().find('h4').text(),
+	                 			 'menuid': $(this).parent().find('#menuid').text(),
+	                 			 'price' : $(this).parent().find('#price').text(),
+	                 			 'qty' : $(this).parent().find('#qty').val(),
+	                 			 'preptime' :$(this).parent().find('#menupreptime').text(),
+	                 			 'category':$(this).parent().find('#menucat').text()
+	                 		 });
+							 var path = JSON.stringify(orders);
+							 console.log(path);
+							 $(this).hide();
+							 $(this).parent().find('.removecart').show();
+							 document.getElementById("pat").value = path;
+							}
+							else{
+								alert("Please enter Quantity and try again");
+							}
+							});
+						$("#order123").click(function(e){
 							e.preventDefault();
 							
 							var menuCount=0;
@@ -82,7 +109,7 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 							$('#form7id').val(menuamount);
 							$('#form8id').val("11/05/2016 "+timedt);
 							$('#form9id').val(preptime);
-							$('#myform form').submit();
+							//$('#myform form').submit();
 							/*<input type="hidden" id="form1id" name="userid"/>
 								<input type="hidden" id="form2id" name="menuCount"/>
 								<input type="hidden" id="form3id" name="menuid"/>
@@ -94,13 +121,7 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 								<input type="hidden" id="form9id" name="preptime"/>*/
 							
 						});
-						$('.portfolio-start .portfolio-img').each(function(e){
 						
-							$('#myform table').append('<tr class="child"><td>'+$(this).find('h4').text()+'</td></tr>');
-							$('#myform table').append('<tr class="child"><td>'+$(this).find('#price').text()+'</td></tr>');
-							$('#myform table').append('<tr class="child"><td>'+$(this).find().val('qty')+'</td></tr>');
-						
-						});
 						
 						$(".scroll").click(function(event){		
 							event.preventDefault();
@@ -148,7 +169,7 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 							var id=$(this).parent().find('#menuid').text();
 							//alert("/deleteMenu/"+id);
 						
-							$.post("/deleteMenu/"+id);
+							$.post("/enableMenu/"+id);
 						    location.reload(); 
 						    $(this).css('display','none');
 						    $(this).parent().find('.deleteMenu').css('display','block');
@@ -165,6 +186,9 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 			});
 			
 		</script>
+		<style>
+		.portfolio-img.enable{opacity:0.2;}
+		</style>
 </head>
 <body>
 <%
@@ -321,6 +345,9 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 							<a href="#home" class="scroll">Home</a>
 							
 							<a href="#portfolio" class="scroll">Menu</a>
+							<% if (username == "admin") { %>
+							<a href="#displayorders" class="scroll">Orders</a>
+							<%} %>
 						</nav>
 				</div>
 				<script src="../js/classie.js"></script>
@@ -349,8 +376,7 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 				<div class="header-bottom">
 					<p>Find your favorite</p>
 					<h1>RECIPES</h1>
-					<a href="#order">Order</a>
-					<p class="reward">OR SEND US YOUR OWN RECIPES AND <u>GET REWARDED!</u></p>
+					
 				</div>
 		</div>
 	</div>
@@ -364,16 +390,31 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 			</div>
 		</div >
 		<div class="portfolio-start">
-		<c:forEach items="${menuitems}" var="menuitem" varStatus="loop">     
-   <div class="portfolio-img">
+						<h1>Appetizer</h1>
+		
+		<c:forEach items="${menuitems}" var="menuitem" varStatus="loop">  
+		
+		<c:if test="${menuitem.category eq 'Appetizer'}">
+		<c:if test="${menuitem.mstatus eq 'false'}">
+		<div class="portfolio-img enable">
+		</c:if>
+		<c:if test="${menuitem.mstatus eq 'true'}">
+		<div class="portfolio-img disable">
+		</c:if>
 					<a href="#small-dialog-it${loop.index}" class="play-icon popup-with-zoom-anim"><img src=<c:out value ='${menuitem.picture}'/> alt="" width="374" height="263"/></a>
 					<div id="small-dialog-it${loop.index}" class="small-dialog-it mfp-hide">
 						<div class="portfolio-items">
 						<img src=<c:out value ='${menuitem.picture}'/> alt="photo" height="200" width="200">
 						
-						
+	<c:if test="${menuitem.mstatus eq 'false'}"><c:out value ='${menuitem.mstatus}'/>
+						<a href="" class="enableMenu" >Enable Menu</a>
+								
+						</c:if>
+						<c:if test="${menuitem.mstatus eq 'true'}"><c:out value ='${menuitem.mstatus}'/>
 						<a href="" class="deleteMenu" >Disable Menu</a>
-						<a href="" class="enableMenu" style="display:none">Enable Menu</a>
+								
+						</c:if>	
+						
 						
 						<h4><c:out value ='${menuitem.name}'/></h4>
 			
@@ -385,9 +426,129 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 						
 						</div>
 					</div>
-				
-   
-</c:forEach>
+		</c:if>
+		   
+			</c:forEach>
+						<div class="clearfix"></div>
+			
+								<h1>Maincourse</h1>
+			
+			<c:forEach items="${menuitems}" var="menuitem" varStatus="loop">  
+			
+		<c:if test="${menuitem.category eq 'Maincourse'}">
+		<c:if test="${menuitem.mstatus eq 'false'}">
+		<div class="portfolio-img enable">
+		</c:if>
+		<c:if test="${menuitem.mstatus eq 'true'}">
+		<div class="portfolio-img disable">
+		</c:if>
+					<a href="#small-dialog-it${loop.index}" class="play-icon popup-with-zoom-anim"><img src=<c:out value ='${menuitem.picture}'/> alt="" width="374" height="263"/></a>
+					<div id="small-dialog-it${loop.index}" class="small-dialog-it mfp-hide">
+						<div class="portfolio-items">
+						<img src=<c:out value ='${menuitem.picture}'/> alt="photo" height="200" width="200">
+						
+						
+	<c:if test="${menuitem.mstatus eq 'false'}"><c:out value ='${menuitem.mstatus}'/>
+						<a href="" class="enableMenu" >Enable Menu</a>
+								
+						</c:if>
+						<c:if test="${menuitem.mstatus eq 'true'}"><c:out value ='${menuitem.mstatus}'/>
+						<a href="" class="deleteMenu" >Disable Menu</a>
+								
+						</c:if>						
+						<h4><c:out value ='${menuitem.name}'/></h4>
+			
+						
+						<c:out value ='${menuitem.name}'/><div id="menuid"><c:out value ='${menuitem.menuid}'/></div>
+						<div id="menucat"><c:out value ='${menuitem.category}'/></div>
+						<div id="menupreptime"><c:out value ='${menuitem.preptime}'/></div>
+						<div id="price"><c:out value ='${menuitem.price}'/></div></div>
+						
+						</div>
+					</div>
+		</c:if>
+		   
+			</c:forEach>
+						<div class="clearfix"></div>
+			
+					<h1>Drink</h1>
+			
+			<c:forEach items="${menuitems}" var="menuitem" varStatus="loop">  
+		<c:if test="${menuitem.category eq 'Drink'}">
+		<c:if test="${menuitem.mstatus eq 'false'}">
+		<div class="portfolio-img enable">
+		</c:if>
+		<c:if test="${menuitem.mstatus eq 'true'}">
+		<div class="portfolio-img disable">
+		</c:if>
+					<a href="#small-dialog-it${loop.index}" class="play-icon popup-with-zoom-anim"><img src=<c:out value ='${menuitem.picture}'/> alt="" width="374" height="263"/></a>
+					<div id="small-dialog-it${loop.index}" class="small-dialog-it mfp-hide">
+						<div class="portfolio-items">
+						<img src=<c:out value ='${menuitem.picture}'/> alt="photo" height="200" width="200">
+						
+						
+					<c:if test="${menuitem.mstatus eq 'false'}"><c:out value ='${menuitem.mstatus}'/>
+						<a href="" class="enableMenu" >Enable Menu</a>
+								
+						</c:if>
+						<c:if test="${menuitem.mstatus eq 'true'}"><c:out value ='${menuitem.mstatus}'/>
+						<a href="" class="deleteMenu" >Disable Menu</a>
+								
+						</c:if>	
+						
+						<h4><c:out value ='${menuitem.name}'/></h4>
+			
+						
+						<c:out value ='${menuitem.name}'/><div id="menuid"><c:out value ='${menuitem.menuid}'/></div>
+						<div id="menucat"><c:out value ='${menuitem.category}'/></div>
+						<div id="menupreptime"><c:out value ='${menuitem.preptime}'/></div>
+						<div id="price"><c:out value ='${menuitem.price}'/></div></div>
+						
+						</div>
+					</div>
+		</c:if>
+		   
+			</c:forEach>
+						<div class="clearfix"></div>
+			
+					<h1>Desert</h1>
+			
+			<c:forEach items="${menuitems}" var="menuitem" varStatus="loop">  
+		<c:if test="${menuitem.category eq 'Desert'}">
+		<c:if test="${menuitem.mstatus eq 'false'}">
+		<div class="portfolio-img enable">
+		</c:if>
+		<c:if test="${menuitem.mstatus eq 'true'}">
+		<div class="portfolio-img disable">
+		</c:if>
+					<a href="#small-dialog-it${loop.index}" class="play-icon popup-with-zoom-anim"><img src=<c:out value ='${menuitem.picture}'/> alt="" width="374" height="263"/></a>
+					<div id="small-dialog-it${loop.index}" class="small-dialog-it mfp-hide">
+						<div class="portfolio-items">
+						<img src=<c:out value ='${menuitem.picture}'/> alt="photo" height="200" width="200">
+						
+						
+						<c:if test="${menuitem.mstatus eq 'false'}"><c:out value ='${menuitem.mstatus}'/>
+						<a href="" class="enableMenu" >Enable Menu</a>
+								
+						</c:if>
+						<c:if test="${menuitem.mstatus eq 'true'}"><c:out value ='${menuitem.mstatus}'/>
+						<a href="" class="deleteMenu" >Disable Menu</a>
+								
+						</c:if>	
+						
+						<h4><c:out value ='${menuitem.name}'/></h4>
+			
+						
+						<c:out value ='${menuitem.name}'/><div id="menuid"><c:out value ='${menuitem.menuid}'/></div>
+						<div id="menucat"><c:out value ='${menuitem.category}'/></div>
+						<div id="menupreptime"><c:out value ='${menuitem.preptime}'/></div>
+						<div id="price"><c:out value ='${menuitem.price}'/></div></div>
+						
+						</div>
+					</div>
+		</c:if>
+		   
+			</c:forEach>
 			<div class="clearfix"></div>
 				</div>
 			
@@ -403,18 +564,23 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 			</div>
 		</div >
 		<div class="portfolio-start">
-		<c:forEach items="${menuitems}" var="menuitem" varStatus="loop">     
-   <div class="portfolio-img">
+						<h1>Appetizer</h1>
+		
+		<c:forEach items="${menuitems}" var="menuitem" varStatus="loop">  
+		
+		<c:if test="${menuitem.category eq 'Appetizer'}">
+		<c:if test="${menuitem.mstatus eq 'true'}">
+		<div class="portfolio-img">
 					<a href="#small-dialog-it${loop.index}" class="play-icon popup-with-zoom-anim"><img src=<c:out value ='${menuitem.picture}'/> alt="" width="374" height="263"/></a>
 					<div id="small-dialog-it${loop.index}" class="small-dialog-it mfp-hide">
 						<div class="portfolio-items">
 						<img src=<c:out value ='${menuitem.picture}'/> alt="photo" height="200" width="200">
+						<a href="#" class="addcart">Add to Cart</a>
+						<a href="#" class="removecart" style="display:none">Remove from Cart</a>
 						
-					
 						<h4><c:out value ='${menuitem.name}'/></h4>
 			
-						<input type="number" name="qty" id="qty">
-					
+						<input type="number" name="qty" id="qty" placeholder="Quantity">
 						<c:out value ='${menuitem.name}'/><div id="menuid"><c:out value ='${menuitem.menuid}'/></div>
 						<div id="menucat"><c:out value ='${menuitem.category}'/></div>
 						<div id="menupreptime"><c:out value ='${menuitem.preptime}'/></div>
@@ -422,9 +588,100 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 						
 						</div>
 					</div>
-				
-   
-</c:forEach>
+		</c:if>
+		</c:if>
+		   
+			</c:forEach>
+						<div class="clearfix"></div>
+			
+								<h1>Maincourse</h1>
+			
+			<c:forEach items="${menuitems}" var="menuitem" varStatus="loop">  
+			
+		<c:if test="${menuitem.category eq 'Maincourse'}">
+		<c:if test="${menuitem.mstatus eq 'true'}">
+		<div class="portfolio-img">
+					<a href="#small-dialog-it${loop.index}" class="play-icon popup-with-zoom-anim"><img src=<c:out value ='${menuitem.picture}'/> alt="" width="374" height="263"/></a>
+					<div id="small-dialog-it${loop.index}" class="small-dialog-it mfp-hide">
+						<div class="portfolio-items">
+						<img src=<c:out value ='${menuitem.picture}'/> alt="photo" height="200" width="200">
+						
+					<a href="#" class="addcart">Add to Cart</a>
+						<a href="#" class="removecart" style="display:none">Remove from Cart</a>
+						
+						<h4><c:out value ='${menuitem.name}'/></h4>
+			
+						<input type="number" name="qty" id="qty" placeholder="Quantity">
+						<c:out value ='${menuitem.name}'/><div id="menuid"><c:out value ='${menuitem.menuid}'/></div>
+						<div id="menucat"><c:out value ='${menuitem.category}'/></div>
+						<div id="menupreptime"><c:out value ='${menuitem.preptime}'/></div>
+						<div id="price"><c:out value ='${menuitem.price}'/></div></div>
+						
+						</div>
+					</div>
+		</c:if></c:if>
+		   
+			</c:forEach>
+						<div class="clearfix"></div>
+			
+					<h1>Drink</h1>
+			
+			<c:forEach items="${menuitems}" var="menuitem" varStatus="loop">  
+		<c:if test="${menuitem.category eq 'Drink'}">
+		<c:if test="${menuitem.mstatus eq 'true'}">
+		<div class="portfolio-img">
+					<a href="#small-dialog-it${loop.index}" class="play-icon popup-with-zoom-anim"><img src=<c:out value ='${menuitem.picture}'/> alt="" width="374" height="263"/></a>
+					<div id="small-dialog-it${loop.index}" class="small-dialog-it mfp-hide">
+						<div class="portfolio-items">
+						<img src=<c:out value ='${menuitem.picture}'/> alt="photo" height="200" width="200">
+						
+						
+						<a href="#" class="addcart">Add to Cart</a>
+						<a href="#" class="removecart" style="display:none">Remove from Cart</a>
+						
+						<h4><c:out value ='${menuitem.name}'/></h4>
+			
+						<input type="number" name="qty" id="qty" placeholder="Quantity">
+						<c:out value ='${menuitem.name}'/><div id="menuid"><c:out value ='${menuitem.menuid}'/></div>
+						<div id="menucat"><c:out value ='${menuitem.category}'/></div>
+						<div id="menupreptime"><c:out value ='${menuitem.preptime}'/></div>
+						<div id="price"><c:out value ='${menuitem.price}'/></div></div>
+						
+						</div>
+					</div>
+		</c:if>
+		  </c:if> 
+			</c:forEach>
+						<div class="clearfix"></div>
+			
+					<h1>Desert</h1>
+			
+			<c:forEach items="${menuitems}" var="menuitem" varStatus="loop">  
+		<c:if test="${menuitem.category eq 'Desert'}">
+			<c:if test="${menuitem.mstatus eq 'true'}">
+		<div class="portfolio-img">
+					<a href="#small-dialog-it${loop.index}" class="play-icon popup-with-zoom-anim"><img src=<c:out value ='${menuitem.picture}'/> alt="" width="374" height="263"/></a>
+					<div id="small-dialog-it${loop.index}" class="small-dialog-it mfp-hide">
+						<div class="portfolio-items">
+						<img src=<c:out value ='${menuitem.picture}'/> alt="photo" height="200" width="200">
+						
+					<a href="#" class="addcart">Add to Cart</a>
+						<a href="#" class="removecart" style="display:none">Remove from Cart</a>
+						
+						<h4><c:out value ='${menuitem.name}'/></h4>
+			
+						<input type="number" name="qty" id="qty" placeholder="Quantity">
+						
+						<c:out value ='${menuitem.name}'/><div id="menuid"><c:out value ='${menuitem.menuid}'/></div>
+						<div id="menucat"><c:out value ='${menuitem.category}'/></div>
+						<div id="menupreptime"><c:out value ='${menuitem.preptime}'/></div>
+						<div id="price"><c:out value ='${menuitem.price}'/></div></div>
+						
+						</div>
+					</div>
+		</c:if>
+		   </c:if>
+			</c:forEach>
 			<div class="clearfix"></div>
 				</div>
 			
@@ -435,22 +692,71 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 	<!--- Portfolio Ends Here --->
 	<div class="aboutus" id="aboutus">
 		<div class="container">
-		<div class="orderdetais" id="orderdetais">
-		<div class="hide" id="myform">
-		<form method="post" action="/createOrder" id="form-mine">
-		<input type="hidden" id="form1id" name="userid"/>
-		<input type="hidden" id="form2id" name="menuCount"/>
-		<input type="hidden" id="form3id" name="menuid"/>
-		<input type="hidden" id="form4id" name="menuname" />
-		<input type="hidden" id="form5id" name="menucategory"/>
-		<input type="hidden" id="form6id" name="menuqty"/>
-		<input type="hidden" id="form7id" name="menuamount"/>
-		<input type="hidden" id="form8id" name="pickup"/>
-		<input type="hidden" id="form9id" name="preptime"/>
-		</form>
+		<% if (username == "admin") { %>
+		<div id="displayorders">
+		<h1>Check all Orders here:</h1>
+		<form name="category" id="category" method ="get" action="/getallOrders" id="FORM_ID" >
+   <input type="radio" name="cat" value = "Desert">Desert<br>
+  <input type="radio" name="cat"  value = "Drink"> Drink<br>
+<input type="radio" name="cat"  value = "MainCourse" >MainCourse<br>
+<input type="radio" name="cat"  value = "Appetizer">Appetizer<br>
+<input type = "submit" name = "submit" value = "Select Category" />
+</form>   
+ <table id ="pass" border="1" style="width:50%">
+  <tr>
+    <th>Orderid</th>
+    <th>user ID </th>
+    <th>Pickup date</th> 
+     <th>Fulfillment date</th> 
+    <th>Ready date</th>
+    <th>Order Date</th>
+    <th>Total Amount</th>
+    <th> Order status </th>
+        <th> Order Items </th>
+    
+   
+  </tr>
+  <c:forEach items="${orders}" var="orders" varStatus="loop">  
+  <tr>
+  
+    <td ><c:out value ='${orders.orderid}'/></td>
+    <td ><c:out value ='${orders.userid}'/></td>
+   
+    <td ><c:out value ='${orders.pickupdt}'/></td>
+     <td ><c:out value ='${orders.fulfildt}'/></td>
+    <td ><c:out value ='${orders.readydt}'/> </td>
+    <td ><c:out value ='${orders.orderdt}'/> </td>
+   
+    <td ><c:out value ='${orders.totalamount}'/> </td>
+  
+  <td ><c:out value ='${orders.ostatus}'/> </td>
+  <td >
+  <c:forEach items="${orders.orderItems}" var="order" varStatus="loop">
+   <c:out value ='${order.mname}'/><br/>  
+  </c:forEach>
+  </td>
+      </tr>
+       </c:forEach>
+</table>
+		
 		</div>
+		<%} %>
+		<% if (username != "admin") { %>
+		<div class="orderdetais" id="orderdetais">
+		
+		<form action = "/getOrders" method = "get" id="form-mine">
+	
+		<br> <br>
+<p> Deliver on </p>
+<input name ="date_input" dateformat="MM/DD/YYYY" type="date" required/>
+ <input type="time" name="usr_time" step = "1" required />
+<br><br>
+<input type = "hidden" id = "pat" name = "path" />
+		<input type="submit" value="order" id="order" />
+		</form>
+		
 
-		<input type="button" value="order" id="order" />
+		
 		<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 		<div class="show">
 		<h1 style="margin-top:800px">Your Order History</h1>
@@ -479,6 +785,7 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 		</tbody>
 		</table></div>
 		</div>
+		<%} %>
 		</div></div>
 	<!-- Footer Starts Here ---->
 	<div class="footer">

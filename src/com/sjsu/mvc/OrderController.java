@@ -77,6 +77,13 @@ public class OrderController {
 	public String login() {
 		return "createOrders";
 	} 
+	@RequestMapping(value = "/getallOrders", method = { RequestMethod.GET })
+	public String getallOrders(Model model, HttpServletRequest request) {
+List<Orders> orders = this.orderService.getAllOrders();
+		System.out.println("orders "+orders);
+		model.addAttribute("orders", orders);
+		return "index";
+	} 
 	/**
 	 * This method is for creating the Menu Item
 	 */

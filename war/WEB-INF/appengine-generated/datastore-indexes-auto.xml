@@ -1,11 +1,4 @@
-<!-- Indices written at Mon, 16 May 2016 20:11:28 PDT -->
+<!-- Indices written at Sat, 21 May 2016 13:13:35 PDT -->
 
-<datastore-indexes>
+<datastore-indexes/>
 
-    <!-- Used 3 times in query history -->
-    <datastore-index kind="ShiftAssignment" ancestor="false" source="auto">
-        <property name="empid" direction="asc"/>
-        <property name="startdate" direction="asc"/>
-    </datastore-index>
-
-</datastore-indexes>

@@ -41,7 +41,9 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 						var ordermap={"menu":"","menuid":"","price":"","qty":"","preptime":"","category":""};
 						$(".addcart").click(function(e){
 							e.preventDefault();
-							if($(this).parent().find('#qty').val()!=""){
+							if($(this).parent().find('#qty').val()==""){
+								$(this).parent().find('#qty').val(1);
+							}
 							ordermap['menu']=ordermap['menu']+$(this).parent().find('h4').text()+",";
 							ordermap['menuid']=ordermap['menuid']+$(this).parent().find('#menuid').text()+",";
 							ordermap['price']=ordermap['price']+$(this).parent().find('#price').text()+",";
@@ -61,12 +63,45 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 							 console.log(path);
 							 $(this).hide();
 							 $(this).parent().find('.removecart').show();
+							 $('#mtable').append("<tr><td>"+$(this).parent().find('h4').text()+"</td><td>"+$(this).parent().find('#qty').val()+"</td><td>"+$(this).parent().find('#price').text()+"</td></tr>");
 							 document.getElementById("pat").value = path;
-							}
-							else{
-								alert("Please enter Quantity and try again");
-							}
+							
+							
 							});
+						$(".removecart").click(function(e){
+							var orderrm = new Array(); 
+							orderrm.push({
+	                 			 'menu' : $(this).parent().find('h4').text(),
+	                 			 'menuid': $(this).parent().find('#menuid').text(),
+	                 			 'price' : $(this).parent().find('#price').text(),
+	                 			 'qty' : $(this).parent().find('#qty').val(),
+	                 			 'preptime' :$(this).parent().find('#menupreptime').text(),
+	                 			 'category':$(this).parent().find('#menucat').text()
+	                 		 });
+							 console.log(orderrm);
+							for (var m=new Array() in orders){
+							   	
+								
+								//console.log(orders[m]);
+								if(orderrm == orders[m]){
+									
+									alert(orders[m][i]);}
+							    	//delete orders[m][i];
+							    
+									
+									for (var i=0;i<orders[m].length;i++){
+										console.log(orders[m][i]);
+										if(orderrm[0] == orders[m][i]){
+											
+											alert(orders[m][i]);}
+									    	//delete orders[m][i];
+									    }
+										
+								}
+							    
+							    
+							
+						});
 						$("#order123").click(function(e){
 							e.preventDefault();
 							
@@ -347,7 +382,11 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 							<a href="#portfolio" class="scroll">Menu</a>
 							<% if (username == "admin") { %>
 							<a href="#displayorders" class="scroll">Orders</a>
+							<%}else{ 
+						%>							<a href="#cart" class="scroll">Cart</a>
+						
 							<%} %>
+							
 						</nav>
 				</div>
 				<script src="../js/classie.js"></script>
@@ -757,31 +796,19 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 		
 
 		
-		<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+		
 		<div class="show">
-		<h1 style="margin-top:800px">Your Order History</h1>
+		<h1 id="cart">Your Cart Details</h1>
 		<table id="mtable" style="background:#f5f5f5;color:#0000;">
 		<thead>
 		<tr>
 		<th width="30%" align="left">Item</th>
 		<th width="10%" align="left">Quantity</th>
 		<th width="30%" align="left">Price</th>
-		<th width="30%" align="left">Status</th>
 		</tr>
 		<thead>
 		<tbody>
-		<tr>
-		<td>American</td>
-		<td>2</td>
-		<td>30</td>
-		<td>Queued</td>
-		</tr>
-		<tr>
-		<td>Italian</td>
-		<td>1</td>
-		<td>40</td>
-		<td>Done</td>
-		</tr>
+		
 		</tbody>
 		</table></div>
 		</div>

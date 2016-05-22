@@ -80,15 +80,9 @@ public class OrderService {
 	}
 
 	
-	public String cancelOrder(String orderid) {
-		// TODO Auto-generated method stub
-		try {
-			return this.ordersDao.cancelOrder(orderid);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+	public boolean cancelOrder(String orderid) {
+		return this.ordersDao.cancelOrder(orderid);
+		
 
 	}
 

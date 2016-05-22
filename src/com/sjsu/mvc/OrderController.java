@@ -84,6 +84,7 @@ List<Orders> orders = this.orderService.getAllOrders();
 		System.out.println("orders "+orders);
 		for(int i = 0; i < orders.size();i++)
 		{
+		   System.out.println(orders.get(i).getOrderid());
 			System.out.println(orders.get(i).getTotalamount());
 		}
 		model.addAttribute("orders", orders);
@@ -198,6 +199,8 @@ DateTime dt = new DateTime(DateTimeZone.forID("America/Los_Angeles"));
         String datetime = date + " " +time;
         String pattern = "YYYY-MM-dd HH:mm:ss";
         DateTime pickup  = DateTime.parse(datetime, DateTimeFormat.forPattern(pattern));
+        DateTime tod = new DateTime(DateTimeZone.forID("America/Los_Angeles"));
+        System.out.println("The todays date" +tod);
         System.out.println("Date"+datetime);
         System.out.println("Pick up date"+pickup);
         int totprep = 0;
@@ -478,12 +481,25 @@ DateTime dt = new DateTime(DateTimeZone.forID("America/Los_Angeles"));
 		DateTime pick = detpickup(pck,preptime);
 		return pick;
 	}
+
 	
-	@RequestMapping(value = "/cancelOrder/{Orderid}", method = RequestMethod.GET)
-	 public String cancelOrder(@PathVariable String orderid,Model model, HttpServletRequest request) {
-	  System.out.println("here");
-	  String response = orderService.cancelOrder(orderid);
-	  model.addAttribute("message", response);
-	  return "message";
-	 }
+
+	@RequestMapping(value = "/cancelOrder", method = RequestMethod.POST)
+	public String cancelOrder(Model model, HttpServletRequest request) {
+		 String oid=request.getParameter("orderid"); 
+
+		 if(this.orderService.cancelOrder(oid))
+		 System.out.println("Updated");
+		 model.addAttribute("message","Order Cancelled. You can order again");
+	     return "redirect:getMenuList";
+	}
+	
+	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+	public String deleteShifts(Model model, HttpServletRequest request){
+		System.out.println("Deleting employee shifts");
+		this.shiftService.removeShiftbyempid("1");
+		this.shiftService.removeShiftbyempid("2");
+		this.shiftService.removeShiftbyempid("3");
+		return "message";
+	}
 }

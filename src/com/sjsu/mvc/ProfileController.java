@@ -191,7 +191,6 @@ public class ProfileController {
 		}
 	else{
 		Profile p = new Profile();
-     
         p.setFirstName(request.getParameter("firstName"));
         p.setLastName(request.getParameter("lastName"));
         p.setEmail(request.getParameter("email"));

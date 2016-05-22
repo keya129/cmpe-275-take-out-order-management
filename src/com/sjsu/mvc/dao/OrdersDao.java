@@ -81,6 +81,32 @@ public class OrdersDao {
 		return null;
 	}
 	
+	@Transactional
+	public boolean cancelOrder(String orderid)
+	{
+		EntityManager em = EMFService.get().createEntityManager();
+		System.out.println("Received" +orderid);
+		try{
+			em.getTransaction().begin();
+			Query q = em.createQuery("Select m from Orders m where m.orderid = :id ").setParameter("id", orderid);
+			Orders orders = (Orders) q.getSingleResult();
+			orders.setOstatus("Cancelled");
+			em.merge(orders);
+			em.getTransaction().commit();
+		
+		}
+		catch (Exception e) {
+			em.getTransaction().rollback();
+			return false;
+		}
+		finally{
+			em.close();
+
+		}
+		return true;
+
+	}
+	
 	/*@Transactional
 	/*public List<String> getAllEmail() throws SQLException {
 		EntityManager entityManager = EMFService.get().createEntityManager();
@@ -107,26 +133,6 @@ public class OrdersDao {
 		}
 		return null;
 	} */
-	@Transactional
-	public String cancelOrder(String orderid) throws SQLException {
-		EntityManager entityManager = EMFService.get().createEntityManager();
-		EntityTransaction tx = entityManager.getTransaction();
-		try {
-			tx.begin();
-			System.out.println("here");
-			Query q = entityManager.createQuery("UPDATE  Orders m SET m.status:='Cancelled' WHERE m.orderid=:arg1");
-			q.setParameter("arg1", orderid);
-			q.executeUpdate();
-			tx.commit();
-			return "success";
-		} catch (Exception e) {
-			tx.rollback();
-		} finally {
-			entityManager.close();
-		}
-		return "fail";
-	}
-	
 	@Transactional
 	public String inProgressOrder(String orderid) throws SQLException {
 		EntityManager entityManager = EMFService.get().createEntityManager();

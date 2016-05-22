@@ -35,5 +35,9 @@
        </c:forEach>
 </table>
 <p>${message} </p>
+<form method="post" action="/cancelOrder">
+<input type="hidden" value="${orderid}" id="orderid" name="orderid" /> 
+<input type="submit" value="cancel" id="cancel" />
+</form>
 </body>
 </html>

@@ -28,6 +28,9 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 <script type="text/javascript" src="../js/move-top.js"></script>
 <script type="text/javascript" src="../js/easing.js"></script>
 					<script type="text/javascript">
+				
+
+
 					function GetSelectedTextValue(ddlFruits) {
 				        var selectedText = ddlFruits.options[ddlFruits.selectedIndex].innerHTML;
 				        var selectedValue = ddlFruits.value;
@@ -366,8 +369,8 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 							<a href="#portfolio" class="scroll">Menu</a>
 							<% if (username == "admin") { %>
 							<a href="#displayorders" class="scroll">Orders</a>
-							<%}else{ 
-						%>							<a href="#cart" class="scroll">Cart</a>
+							<%}else{ 	
+						%>		<a href="#displayorders" class="scroll">Orders</a>					<a href="#cart" class="scroll">Cart</a>
 						
 							<%} %>
 							
@@ -634,7 +637,7 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 						
 						<h4><c:out value ='${menuitem.name}'/></h4>
 			
-						<input type="number" name="qty" id="qty" placeholder="Quantity">
+						<input type="number" name="qty" id="qty" placeholder="Quantity" value="1" max="100">
 						<c:out value ='${menuitem.name}'/><div id="menuid"><c:out value ='${menuitem.menuid}'/></div>
 						<div id="menucat"><c:out value ='${menuitem.category}'/></div>
 						<div id="menupreptime"><c:out value ='${menuitem.preptime}'/></div>
@@ -715,14 +718,16 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 	<!--- Portfolio Ends Here --->
 	<div class="aboutus" id="aboutus">
 		<div class="container">
-		<% if (username == "admin") { %>
+	
 		<div id="displayorders">
 		<h1>Check all Orders here:</h1>
 		  
  
 		
 		</div>
-		<%} %>
+		
+		
+	
 		<% if (username != "admin") { %>
 		<div class="orderdetais" id="orderdetais">
 		
@@ -730,11 +735,13 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 	
 		<br> <br>
 <p> Deliver on </p>
-<input name ="date_input" dateformat="MM/DD/YYYY" type="date" required id="odate"/>
- <input type="time" name="usr_time" step = "1" required id="otime" />
+
+ <input name ="date_input" dateformat="YYYY-MM-DD" type="date" id="odate" required  min="" max""/>
+ <input type="time" name="usr_time" step = "1" id="otime" min="06:00" max="21:00" required />
 <br><br>
 <input type = "hidden" id = "pat" name = "path" />
 		<input type="button" value="order" id="order" />
+		
 		</form>
 		
 
@@ -773,5 +780,41 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 	</div>
 	<!-- Footer Ends Here ---->
 </body>
+<script type="text/javascript">
+				
+					/*Date limiting function*/
+var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth()+1; //January is 0!
+var yyyy = today.getFullYear();
+if(dd<10){
+dd='0'+dd;
+} 
+if(mm<10){
+mm='0'+mm;
+} 
+
+today = yyyy+'-'+mm+'-'+dd;
+
+var next = new Date();
+next.setDate(next.getDate()+30);
+
+var d = next.getDate();
+var m = next.getMonth()+1; //January is 0!
+var yy = next.getFullYear();
+if(d<10){
+d='0'+d;
+} 
+if(m<10){
+m='0'+m;
+} 
+
+
+next = yy+'-'+m+'-'+d;
+
+
+document.getElementById("odate").setAttribute("min", today);
+document.getElementById("odate").setAttribute("max", next);
+</script>
 </html>
 	

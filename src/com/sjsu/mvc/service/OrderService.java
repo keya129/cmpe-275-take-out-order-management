@@ -23,22 +23,21 @@ public class OrderService {
 		this.ordersDao = newordDAO;
 	}
 
-	
-	public List<Orders> getOrders(String userid) {
+	public List<Orders> getAllOrders() {
 		// TODO Auto-generated method stub
 		try {
-			return this.ordersDao.getOrders(userid);
+			return this.ordersDao.getAllOrders();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 
-	}
-	public List<Orders> getAllOrders() {
+	}	
+	public List<Orders> getOrders(String userid) {
 		// TODO Auto-generated method stub
 		try {
-			return this.ordersDao.getAllOrders();
+			return this.ordersDao.getOrders(userid);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -68,6 +67,29 @@ public class OrderService {
 				e.printStackTrace();
 			}
 		 return null;
+	}
+
+	public void trackOrderStatus(){
+		 try {
+				this.ordersDao.trackOrderStatus();
+				//Send notificaitons from here
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+
+	
+	public String cancelOrder(String orderid) {
+		// TODO Auto-generated method stub
+		try {
+			return this.ordersDao.cancelOrder(orderid);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+
 	}
 
 

@@ -14,6 +14,7 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -151,9 +152,11 @@ public class ProfileController {
         System.out.println(email);
         //MailService ms=new MailService();
        // MailService.sendSimpleMail();
-        final String emailTo = email+".com";
+		String em = request.getParameter("email");
+
+        final String emailTo = em;
 	    final String subject = "Verification" ;
-	    final String yourmailid = "bhavana.bhasker@gmail.com";
+	    final String yourmailid = em;
 	    final String message = "Hi Your code "+s;
 	    // for logging
 	    System.out.println("emailTo: " + emailTo);
@@ -181,17 +184,28 @@ public class ProfileController {
 	}
 	@RequestMapping(value="/profile",params = {"firstName", "lastName", "email", "password","code"},method = RequestMethod.POST) 
 	public String createOrUpdate(Model model,HttpServletRequest request) {
-        Profile p = new Profile();
+		if(this.personService.checkUser(request.getParameter("email")) == true){
+			model.addAttribute("Errormsg","User already exists");
+			
+			return "index";
+		}
+	else{
+		Profile p = new Profile();
      
         p.setFirstName(request.getParameter("firstName"));
         p.setLastName(request.getParameter("lastName"));
         p.setEmail(request.getParameter("email"));
         p.setPassword(request.getParameter("password"));
-    
+         
         System.out.println(p);
         System.out.println("value of s "+s);
         System.out.println("value of code "+request.getParameter("code"));
-
+      /*  Profile checkp = personService.getPersonById(p.getEmail());
+        if(checkp != null)
+        {
+        model.addAttribute("Errormsg","User already registered!"); 	
+        return "index";
+        } */
         if(request.getParameter("code").equals(s.toString())){
         this.personService.createorUpdate(p);
 		model.addAttribute("Errormsg","User is created");}
@@ -202,6 +216,7 @@ public class ProfileController {
         
 
 		return "index";
+	}
 	} 
 	@RequestMapping(value="/login",params = {"email", "password"},method = RequestMethod.POST)
 	public String checkLogin(Model model, HttpServletRequest request,HttpServletResponse response) { 
@@ -210,9 +225,10 @@ public class ProfileController {
 		
 		System.out.println("Email is "+emailstr+" Pass is" +password);
 		if(emailstr.equals("admin") && password.equals("admin")){
-	        request.getSession().setAttribute("user", "admin");
+			HttpSession session = request.getSession();
+	        session.setAttribute("user", "admin");
 	       // response.addCookie(new Cookie("user", "admin"));
-	        System.out.println(request.getSession().getAttribute("user"));
+	        System.out.println(session.getAttribute("user"));
 	        
 	       
 	        return "redirect:getMenuList";

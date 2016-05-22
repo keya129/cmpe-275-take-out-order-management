@@ -36,8 +36,51 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 				    }
 
 					jQuery(document).ready(function($) {
-						
 						var orders = new Array(); 
+
+						$('#order').click(function(e){
+							alert("I am ordering");
+							 $.ajax({
+						          type:'GET',
+						           url: "/getOrders",
+						           type: "GET",
+						           dataType: "html",
+						           data:{
+						        	 path:document.getElementById("pat").value,
+						        	 date_input:document.getElementById("odate").value,
+						        	 usr_time:document.getElementById("otime").value	 
+						           },
+						          success:function(data) {
+						                if(data) {   // DO SOMETHING     
+//alert(data.find('.header-bottom').html());
+						                alert(data);
+						                $("#receipt").html(data);
+						                } 
+						                else { // DO SOMETHING 
+						                	}
+						              }
+							 
+
+						    });	
+						});
+						$(window).load(function(e){
+						    $.ajax({
+						          type:'GET',
+						          url:'/getallOrders',
+						          dataType: "html",
+						          
+						          success:function(data) {
+						                if(data) {   // DO SOMETHING     
+//alert(data.find('.header-bottom').html());
+						                $("#displayorders").html(data);
+						                } 
+						                else { // DO SOMETHING 
+						                	}
+						              }
+
+						    }); 
+						       });
+	
 						var ordermap={"menu":"","menuid":"","price":"","qty":"","preptime":"","category":""};
 						$(".addcart").click(function(e){
 							e.preventDefault();
@@ -69,93 +112,23 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 							
 							});
 						$(".removecart").click(function(e){
-							var orderrm = new Array(); 
-							orderrm.push({
-	                 			 'menu' : $(this).parent().find('h4').text(),
-	                 			 'menuid': $(this).parent().find('#menuid').text(),
-	                 			 'price' : $(this).parent().find('#price').text(),
-	                 			 'qty' : $(this).parent().find('#qty').val(),
-	                 			 'preptime' :$(this).parent().find('#menupreptime').text(),
-	                 			 'category':$(this).parent().find('#menucat').text()
-	                 		 });
-							 console.log(orderrm);
-							for (var m=new Array() in orders){
-							   	
-								
-								//console.log(orders[m]);
-								if(orderrm == orders[m]){
-									
-									alert(orders[m][i]);}
-							    	//delete orders[m][i];
-							    
-									
-									for (var i=0;i<orders[m].length;i++){
-										console.log(orders[m][i]);
-										if(orderrm[0] == orders[m][i]){
-											
-											alert(orders[m][i]);}
-									    	//delete orders[m][i];
-									    }
-										
-								}
-							    
-							    
-							
+							var index = orders.map(function(e) { return e.menuid; }).indexOf($(this).parent().find('#menuid').text());
+							console.log(index);
+							orders.splice(index, 1);
+							 var path = JSON.stringify(orders);
+							 console.log(path);
+							 $(this).hide();
+							 $(this).parent().find('.addcart').show();
+							var cmpstr=$(this).parent().find('h4').text();
+							 $('#mtable td').each(function(e){
+								 if(cmpstr==$(this).html()){
+								alert($(this).html()); 
+						        $(this).parent().remove();
+						        }
+								 });
+															
 						});
-						$("#order123").click(function(e){
-							e.preventDefault();
-							
-							var menuCount=0;
-							var menuid="";
-							var menuname="";
-							var menucategory="";
-							var menuqty="";
-							var menuamount="";
-							var pickup="";
-							var preptime="";
-							alert("I am ordering");
-							$('.portfolio-start .portfolio-img').each(function(e){
-								menuCount++;
-							menuid=menuid+$(this).find('#menuid').text()+",";
-							menuname=menuname+$(this).find('h4').text()+",";
-							menuamount=menuamount+$(this).find('#price').text()+",";
-							menucategory=menucategory+$(this).find("#menucat").text()+",";
-							preptime=preptime+$(this).find('#menupreptime').text()+",";
-							menuqty=menuqty+$(this).find().val('qty')+",";
-							pickup=pickup+$(this).find().val('date')+",";
-							
-							})
-							var dt = new Date();
-							var hrs=dt.getHours()+1;
-							var timedt = hrs + ":" + dt.getMinutes() + ":" + dt.getSeconds();
-							console.log("Menu id "+menuid);
-							console.log("menuname "+menuname);
-							console.log("menuamount "+menuamount);
-							console.log("menucategory "+menucategory);
-							console.log("preptime "+preptime);
-							console.log("menuqty "+menuqty);
-							console.log("pickup "+timedt);
-							$('#form1id').val('bhavana.bhasker@gmail.com');
-							$('#form2id').val(menuCount);
-							$('#form3id').val(menuid);
-							$('#form4id').val(menuname);
-							$('#form5id').val(menucategory);
-							$('#form6id').val(menuqty);
-							$('#form7id').val(menuamount);
-							$('#form8id').val("11/05/2016 "+timedt);
-							$('#form9id').val(preptime);
-							//$('#myform form').submit();
-							/*<input type="hidden" id="form1id" name="userid"/>
-								<input type="hidden" id="form2id" name="menuCount"/>
-								<input type="hidden" id="form3id" name="menuid"/>
-								<input type="hidden" id="form4id" name="menuname" />
-								<input type="hidden" id="form5id" name="menucategory"/>
-								<input type="hidden" id="form6id" name="menuqty"/>
-								<input type="hidden" id="form7id" name="menuamount"/>
-								<input type="hidden" id="form8id" name="pickup"/>
-								<input type="hidden" id="form9id" name="preptime"/>*/
-							
-						});
+						
 						
 						
 						$(".scroll").click(function(event){		
@@ -180,9 +153,20 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 						});
 						$("a#register").click(function(e){
 							e.preventDefault();
-							var email=$(this).parent().find('#email').val();
+							var emailp=$(this).parent().find('#email').val();
 							//alert("/profile/"+email);
-							$.post("/profile/"+email);
+							 $.ajax({
+						          type:'POST',
+						           url: "/profile/emailp",
+						           dataType: "html",
+						           data:{
+						        	 email:emailp
+						        	  },
+						          success:function(data) {
+						              }
+							 
+
+						    });
 							$('.hidenow').show();
 						});
 						$(".deleteMenu").click(function(e){
@@ -273,10 +257,10 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 					
 					<% } %>
 					<li><a class="play-icon popup-with-zoom-anim" href="#small-dialog1">Sign up</a></li>
-<% if (username == "admin") { %>
+<c:if test="${sessionScope.user eq 'admin'}">
 					<li><a class="play-icon popup-with-zoom-anim" href="#small-dialog2">Add Menu</a></li>
 					
-<% } %>
+</c:if>
 					<li><div class="main">
 								<section>
 									<button id="showRight" class="navig"></button>
@@ -307,7 +291,7 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 							<h4>Enter Your Details Here</h4>
 							<input type="text" value="First Name" name="firstName" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'First Name';}" />
 							<input type="text" value="Second Name" name="lastName" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Second Name';}" />
-							<input type="email" class="email" id="email" name="email" value="Enter Email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Enter Email';}"  />
+							<input type="text" class="email" id="email" name="email" value="Enter Email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Enter Email';}"  />
 							<input type="password" value="Password" name="password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}"/>
 							<a href="#" id="register">Register</a>
 							<div class="hidenow">
@@ -734,49 +718,8 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 		<% if (username == "admin") { %>
 		<div id="displayorders">
 		<h1>Check all Orders here:</h1>
-		<form name="category" id="category" method ="get" action="/getallOrders" id="FORM_ID" >
-   <input type="radio" name="cat" value = "Desert">Desert<br>
-  <input type="radio" name="cat"  value = "Drink"> Drink<br>
-<input type="radio" name="cat"  value = "MainCourse" >MainCourse<br>
-<input type="radio" name="cat"  value = "Appetizer">Appetizer<br>
-<input type = "submit" name = "submit" value = "Select Category" />
-</form>   
- <table id ="pass" border="1" style="width:50%">
-  <tr>
-    <th>Orderid</th>
-    <th>user ID </th>
-    <th>Pickup date</th> 
-     <th>Fulfillment date</th> 
-    <th>Ready date</th>
-    <th>Order Date</th>
-    <th>Total Amount</th>
-    <th> Order status </th>
-        <th> Order Items </th>
-    
-   
-  </tr>
-  <c:forEach items="${orders}" var="orders" varStatus="loop">  
-  <tr>
-  
-    <td ><c:out value ='${orders.orderid}'/></td>
-    <td ><c:out value ='${orders.userid}'/></td>
-   
-    <td ><c:out value ='${orders.pickupdt}'/></td>
-     <td ><c:out value ='${orders.fulfildt}'/></td>
-    <td ><c:out value ='${orders.readydt}'/> </td>
-    <td ><c:out value ='${orders.orderdt}'/> </td>
-   
-    <td ><c:out value ='${orders.totalamount}'/> </td>
-  
-  <td ><c:out value ='${orders.ostatus}'/> </td>
-  <td >
-  <c:forEach items="${orders.orderItems}" var="order" varStatus="loop">
-   <c:out value ='${order.mname}'/><br/>  
-  </c:forEach>
-  </td>
-      </tr>
-       </c:forEach>
-</table>
+		  
+ 
 		
 		</div>
 		<%} %>
@@ -787,11 +730,11 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 	
 		<br> <br>
 <p> Deliver on </p>
-<input name ="date_input" dateformat="MM/DD/YYYY" type="date" required/>
- <input type="time" name="usr_time" step = "1" required />
+<input name ="date_input" dateformat="MM/DD/YYYY" type="date" required id="odate"/>
+ <input type="time" name="usr_time" step = "1" required id="otime" />
 <br><br>
 <input type = "hidden" id = "pat" name = "path" />
-		<input type="submit" value="order" id="order" />
+		<input type="button" value="order" id="order" />
 		</form>
 		
 
@@ -810,7 +753,11 @@ BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService(
 		<tbody>
 		
 		</tbody>
-		</table></div>
+		</table>
+		<div id="receipt">
+		
+		</div>
+		</div>
 		</div>
 		<%} %>
 		</div></div>

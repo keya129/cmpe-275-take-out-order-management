@@ -122,7 +122,7 @@ public class MenuController {
             System.out.println("The blob received" +image);
         }
         
-		String category = request.getParameter("category");
+		String category = request.getParameter("category").trim();
 		System.out.println(category);
 		String name = request.getParameter("name");
 		System.out.println(name);
@@ -137,7 +137,7 @@ public class MenuController {
 		
       
 		
-		if(!category.equals("Appetizer")&&!category.equals("Drink")&&!category.equals("Desert")&&!category.equals("Maincourse")){
+		if(!category.equalsIgnoreCase("Appetizer")&&!category.equalsIgnoreCase("Drink")&&!category.equalsIgnoreCase("Desert")&&!category.equalsIgnoreCase("Maincourse")){
 			
 			model.addAttribute("message", "Invalid Category");
 			request.getSession().setAttribute("message", "Invalid Category");
@@ -178,23 +178,20 @@ public class MenuController {
 	}
 
 	@RequestMapping(value = "/deleteMenu/{id}", method ={RequestMethod.POST, RequestMethod.DELETE} )
-	public void deleteMenuItem(@PathVariable String id,Model model, HttpServletRequest request) {		
+	public String deleteMenuItem(@PathVariable String id,Model model, HttpServletRequest request) {		
 		 System.out.println("The id received is"+id);
 		if (menuService.deleteMenu(id)){
 			model.addAttribute("message", "Menu item deleted successfully");
-			System.out.println("Deleted"+id);
-			
+			return "message";
 		} else {
 			model.addAttribute("message", "Transaction Failure");
-			
+			return "message";
 		}
 	}
 
 	@RequestMapping(value = "/enableMenu/{id}", method = RequestMethod.POST)
 	public String enableMenuItem(@PathVariable String id ,Model model, HttpServletRequest request) {
 		if (menuService.enableMenu(id)) {
-			System.out.println("Enabled "+id);
-			
 			model.addAttribute("message", "Menu item enabled successfully");
 			return "redirect:getMenuList";
 		} else {
@@ -207,10 +204,15 @@ public class MenuController {
 	public String getMenus( Model model, HttpServletRequest request) {
 		String item = request.getParameter("cat");
 		System.out.println("The item selected is" +item);
-		List<Menu> menu = this.menuService.getMenuList();
+		List<Menu> menu =  this.menuService.getMenubyCat(item);
+		if(menu.isEmpty()){
+	    model.addAttribute("message", "Sorry,no Menu Item available for this category!");	
+	    return "message";
+		} else {
 		System.out.println(menu.get(0));
 		model.addAttribute("menuitems", menu);
 		return "createOrder";
+		}
 	}
 	
 	@RequestMapping(value = "/getMenuList", method = RequestMethod.GET)
@@ -230,5 +232,4 @@ public class MenuController {
 		model.addAttribute("menuitems", menu);
 		return "index";
 	}
-
 }

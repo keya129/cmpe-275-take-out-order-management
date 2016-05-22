@@ -36,4 +36,8 @@ public class PersonServiceImpl implements PersonService {
     public boolean checkLogin(String email,String password){
     	return this.personDAO.checkLogin(email,password);
     }
+    @Override
+	public boolean checkUser(String email) {
+		return this.personDAO.checkUser(email);
+	}
 }

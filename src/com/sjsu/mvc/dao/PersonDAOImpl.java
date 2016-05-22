@@ -46,15 +46,40 @@ public class PersonDAOImpl implements PersonDAO {
 		}
 	    
 	}
+	public boolean checkUser(String email){
+		EntityManager em = EMFService.get().createEntityManager();
+		
+		try{
+			
+			Profile p = em.find(Profile.class, email);
+			if(p.getEmail().equals(email)){
+				System.out.println(p.getEmail() + " already exists");
+				return true;
+			}
+			else{ 
+				System.out.println(p.getEmail() + " is new user");
+				return false;
+			}
+		}
+		catch(NullPointerException np){
+			System.out.println("In catch");
+			return false;					
+		}
+		finally{
+			em.close();
+		}		        
+	}
+
+	
 	public boolean checkLogin(String email,String password){
 		EntityManager em = EMFService.get().createEntityManager();
 		
 		try{
 			
 			Profile p = em.find(Profile.class, email);
-			System.out.println(p.getEmail());
-			System.out.println(p.getid());
-			if(p.getEmail().equals(email))
+			//System.out.println(p.getEmail());
+			//System.out.println(p.getid());
+			if(p.getEmail().equals(email) && p.getPassword().equals(password))
 			return true;
 			else 
 		    return false;
@@ -71,7 +96,12 @@ public class PersonDAOImpl implements PersonDAO {
 				 return false; 
 			 } */
 			 
-		}finally{
+		}
+		catch(NullPointerException np){
+			System.out.println("In catch");
+			return false;					
+		}
+		finally{
 			em.close();
 		}
 		        

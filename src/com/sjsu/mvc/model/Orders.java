@@ -1,9 +1,11 @@
 package com.sjsu.mvc.model;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.PrimaryKey;
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +13,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -33,24 +37,26 @@ public class Orders {
 	private String userid;
 
 	@Column(nullable = false)
-	private DateTime pickupdt;
+	private Date pickupdt;
 
 	@Column(nullable = false)
-	private DateTime fulfildt;
+	private Date fulfildt;
 
 	@Column(nullable = false)
-	private DateTime readydt;
+	private Date readydt;
 
 	@Column(nullable = false)
-	private DateTime orderdt;
+	private Date orderdt;
 	
 	@Column(nullable = false)
 	private double totalamount;
 	
 	@Column(nullable = false)
 	private String ostatus;
+
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "orders",  cascade = CascadeType.ALL)
+	@Basic(fetch = FetchType.EAGER)
     private List<OrderItem> orderItems; 
 	
 	
@@ -61,7 +67,7 @@ public class Orders {
 
 	public void setOrderItems(List<OrderItem> orderItems) {
 		this.orderItems = orderItems;
-	}
+	} 
 
 	public String getOrderid() {
 		return orderid;
@@ -80,35 +86,40 @@ public class Orders {
 	}
 
 	public DateTime getPickupdt() {
-		return pickupdt;
+		DateTime pickup = new DateTime(pickupdt);
+		return pickup;
 	}
 
 	public void setPickupdt(DateTime pickupdt) {
-		this.pickupdt = pickupdt;
+		this.pickupdt = pickupdt.toDate();
 	}
 
 	public DateTime getFulfildt() {
-		return fulfildt;
+		DateTime fullfil = new DateTime(fulfildt);
+		return fullfil;
 	}
 
 	public void setFulfildt(DateTime fulfildt) {
-		this.fulfildt = fulfildt;
+		
+		this.fulfildt = fulfildt.toDate();
 	}
 
 	public DateTime getReadydt() {
-		return readydt;
+		DateTime ready = new DateTime(readydt);
+		return ready;
 	}
 
 	public void setReadydt(DateTime readydt) {
-		this.readydt = readydt;
+		this.readydt = readydt.toDate();
 	}
 
 	public DateTime getOrderdt() {
-		return orderdt;
+		DateTime order = new DateTime(orderdt);
+		return order;
 	}
 
 	public void setOrderdt(DateTime orderdt) {
-		this.orderdt = orderdt;
+		this.orderdt = orderdt.toDate();
 	}
 
 	public double getTotalamount() {
@@ -145,4 +156,3 @@ public class Orders {
 	
 	
 }
-

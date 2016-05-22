@@ -12,4 +12,3 @@ import javax.persistence.Persistence;
 	 return emfInstance;
 	 }
 	}
-

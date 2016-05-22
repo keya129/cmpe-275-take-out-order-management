@@ -3,6 +3,7 @@ import java.util.List;
 
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.PrimaryKey;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -21,10 +22,10 @@ import com.google.appengine.api.datastore.Key;
 @Table(name = "OrderItem")
 public class OrderItem {
 
-	@Id
-	@PrimaryKey
-	@Extension(vendorName="datanucleus", key="gae.encoded-pk", value="true")
-	private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @PrimaryKey
+    private Key id;
 
 	@Column(nullable = false)
 	private String userid;
@@ -47,12 +48,11 @@ public class OrderItem {
 	
 	@Column(nullable = false)
 	private String menuid;
-
-   /* @ManyToOne(optional=false)
-    @JoinColumn(name="orderid",referencedColumnName="orderid")
+	
+	@ManyToOne(cascade = CascadeType.ALL)
     private Orders orders;
     
-    @ManyToMany(fetch=FetchType.EAGER)
+  /*  @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(name="ORDER_DETAIL",
             joinColumns=
             @JoinColumn(name="orderid", referencedColumnName="orderid"),
@@ -61,11 +61,11 @@ public class OrderItem {
     )
     private List<Menu> menuList;*/
 
-	public String getId() {
+	public Key getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Key id) {
 		this.id = id;
 	}
 
@@ -125,15 +125,15 @@ public class OrderItem {
 	public void setMenuid(String menuid) {
 		this.menuid = menuid;
 	}
-
-	/*public Orders getOrders() {
+/*
+	public Orders getOrders() {
 		return orders;
 	}
 
 	public void setOrders(Orders orders) {
 		this.orders = orders;
 	}
-
+	/*
 	public List<Menu> getMenuList() {
 		return menuList;
 	}
@@ -145,4 +145,3 @@ public class OrderItem {
     
     
 }
-

@@ -10,6 +10,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 import javax.persistence.Entity;
@@ -76,13 +77,17 @@ public class OrderController {
 	@RequestMapping(value = "/displayOrder", method = { RequestMethod.GET })
 	public String login() {
 		return "createOrders";
-	} 
+	}
 	@RequestMapping(value = "/getallOrders", method = { RequestMethod.GET })
 	public String getallOrders(Model model, HttpServletRequest request) {
 List<Orders> orders = this.orderService.getAllOrders();
 		System.out.println("orders "+orders);
+		for(int i = 0; i < orders.size();i++)
+		{
+			System.out.println(orders.get(i).getTotalamount());
+		}
 		model.addAttribute("orders", orders);
-		return "index";
+		return "getorders";
 	} 
 	/**
 	 * This method is for creating the Menu Item
@@ -202,6 +207,7 @@ DateTime dt = new DateTime(DateTimeZone.forID("America/Los_Angeles"));
         Orders order = new Orders();
  	    UUID idOn = UUID.randomUUID();
  	    String orderid=""+idOn; 
+ 	    
  	    order.setOrderid(orderid);
  	    order.setUserid(username);
  	    order.setPickupdt(pickup);
@@ -223,12 +229,8 @@ DateTime dt = new DateTime(DateTimeZone.forID("America/Los_Angeles"));
 	       System.out.println("Prep  time"+preptime);
 	       System.out.println("Category" +category);
 	    	   OrderItem orderitem = new OrderItem();
-	    	   UUID idOne = UUID.randomUUID();
-	    	   String id=""+idOne;  
-	    	   orderitem.setId(id);
 	    	   orderitem.setMname(menu);
 	    	   orderitem.setMenuid(menuid);
-	    	  
 	    	    orderitem.setQty(quantity);
 	    	    orderitem.setAmount(amount * quantity);
 	    	    
@@ -238,8 +240,11 @@ DateTime dt = new DateTime(DateTimeZone.forID("America/Los_Angeles"));
 	            orderitem.setUserid(username);
 	            orderitem.setCategory(category);
 	            orderItem.add(orderitem);
+	           
+	            
 	          
 	    }
+	    order.setTotalamount(totAmt);
 	    order.setOrderItems(orderItem);
 	    System.out.println("Total PrepTime" +totprep);
 	    System.out.println("Total Amount" +totAmt);
@@ -250,6 +255,7 @@ DateTime dt = new DateTime(DateTimeZone.forID("America/Los_Angeles"));
 	    order.setOrderdt(today);
 		if(pickup.isBefore(today)){
 			System.out.println("Order in the Past");
+			order.setOstatus("NotAccepted");
 			model.addAttribute("message", "Order cannot be in the Past");
 	    	model.addAttribute("orderid", order.getOrderid());
 	    	model.addAttribute("userid", order.getUserid());
@@ -262,7 +268,7 @@ DateTime dt = new DateTime(DateTimeZone.forID("America/Los_Angeles"));
 			return "receipt";
 		}
 		if(pickup.toString().isEmpty()){
-			
+			order.setOstatus("NotAccepted");
 			DateTime pickupdt = checkPickUp(today,totprep);
 			   System.out.println("The food will be available at" +pickupdt);
 		    	model.addAttribute("message", "Food will be avaible at  "+pickupdt);
@@ -273,14 +279,14 @@ DateTime dt = new DateTime(DateTimeZone.forID("America/Los_Angeles"));
 		    	model.addAttribute("readydt", order.getReadydt());
 		    	model.addAttribute("orderdt", order.getOrderdt());
 		    	model.addAttribute("orderstatus", order.getOstatus());
-		    	model.addAttribute("orderitems",order.getOrderItems());
+		        model.addAttribute("orderitems",order.getOrderItems());
 				return "receipt";
 		    
 		} 
 		else {
 		DateTime pickupdt = checkPickUp(pickup,totprep);
 		  if(pickup.isBefore(pickupdt)){
-			 
+			    order.setOstatus("NotAccepted");
 		        System.out.println("The earliest pickup time is " +pickupdt);
 		    	model.addAttribute("message", "This PickUP time is not avaiable. Earliest available PickUP time is "+pickupdt);
 		    	model.addAttribute("orderid", order.getOrderid());
@@ -290,13 +296,14 @@ DateTime dt = new DateTime(DateTimeZone.forID("America/Los_Angeles"));
 		    	model.addAttribute("readydt", order.getReadydt());
 		    	model.addAttribute("orderdt", order.getOrderdt());
 		    	model.addAttribute("orderstatus", order.getOstatus());
-		    	model.addAttribute("orderitems",order.getOrderItems());
+		     	model.addAttribute("orderitems",order.getOrderItems());
 				return "receipt";
 		    } else {
 		    	
 		    	order.setPickupdt(pickup);
 		    	order.setFulfildt(pickup);
 		    	order.setReadydt(pickup); 
+		    	order.setOstatus("Queued");
 		    	System.out.println("The pickupTime is "+pickup);
 		    	
 		    }
@@ -471,5 +478,12 @@ DateTime dt = new DateTime(DateTimeZone.forID("America/Los_Angeles"));
 		DateTime pick = detpickup(pck,preptime);
 		return pick;
 	}
-
+	
+	@RequestMapping(value = "/cancelOrder/{Orderid}", method = RequestMethod.GET)
+	 public String cancelOrder(@PathVariable String orderid,Model model, HttpServletRequest request) {
+	  System.out.println("here");
+	  String response = orderService.cancelOrder(orderid);
+	  model.addAttribute("message", response);
+	  return "message";
+	 }
 }
